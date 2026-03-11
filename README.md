@@ -247,6 +247,14 @@ class OrderedTTSManager:
 
 ## 🎨 个性化与定制能力
 
+### 最新架构说明（2.0.x）
+
+目前项目采用 **前后端分离** 架构：
+- **后端 (FastAPI)**：核心引擎，处理大模型流式对话、TTS/ASR处理与 RAG 检索。直接通过 FastAPI 托管静态资源服务。
+- **前端 (HTML+JS+CSS)**：原生基于 Web 技术栈，前端通过原生 Web Audio API 与 WebSocket 等手段实现低延迟音频对答和交互。*(主要位于 `static/` 目录下)*
+
+> *注：旧版本基于 Streamlit 的前端代码实现分布于 `components/` 作为组件保留，但核心运行环境已迁移至原生 Web。*
+
 ### 1. 面试官角色定制
 
 ```python
@@ -336,17 +344,14 @@ export DASHSCOPE_API_KEY="your-api-key"
 python scripts/build_cs_vector_store.py
 
 # 5. 启动应用
-# 方式一：Streamlit 前端
-streamlit run app.py
-
-# 方式二：FastAPI 后端
-uvicorn api_server:app --host 0.0.0.0 --port 8000
+# FastAPI 后端服务 (自带前端页面托管)
+uvicorn main:app --host 0.0.0.0 --port 8000
 ```
 
 ### 访问地址
 
-- **Streamlit UI**: http://localhost:8501
-- **FastAPI Docs**: http://localhost:8000/docs
+- **Web UI**: http://localhost:8000/static/index.html
+- **API Docs**: http://localhost:8000/docs
 - **WebSocket**: ws://localhost:8000/ws/chat
 
 ---
@@ -355,21 +360,35 @@ uvicorn api_server:app --host 0.0.0.0 --port 8000
 
 ```
 ai_interviewer/
-├── app.py                      # Streamlit 主应用
-├── api_server.py               # FastAPI 后端服务
+├── main.py                     # FastAPI 后端主服务 (挂载静态资源)
 ├── config.py                   # 配置中心（API Key、路径、参数）
 ├── requirements.txt            # 依赖清单
 │
-├── modules/                    # 核心模块
-│   ├── llm_agent.py           # LLM 对话引擎（流式输出）
-│   ├── rag_engine.py          # RAG 检索引擎（ChromaDB）
-│   ├── audio_processor.py     # 音频处理（TTS/ASR/流式管理）
-│   ├── ai_report.py           # AI 报告生成（Qwen-max 思考模式）
-│   └── interview_manager.py   # 面试状态管理器
+├── modules/                    # 核心架构模块
+│   ├── ai_report.py           # AI 报告生成（大模型推理增强评价）
+│   ├── audio_processor.py     # 音频处理（流式 TTS 队列与 ASR）
+│   ├── interview_manager.py   # 面试状态管理器流机制
+│   ├── llm_agent.py           # LLM 对话编排与流式代理
+│   ├── rag_engine.py          # RAG 检索（ChromaDB）
+│   └── resume_parser.py       # 简历解析处理（构建专属提问特征）
 │
-├── components/                 # UI 组件
-│   └── streaming_audio.py     # 流式音频播放器
+├── static/                     # 原生 Web 前端（替代原 Streamlit）
+│   ├── index.html             # UI主入口
+│   ├── css/style.css          # 相关样式排版
+│   └── js/                    # 处理语音、连接 WS、TTS播放流等功能逻辑
 │
+├── scripts/                    # 评测与环境构建脚本
+│   ├── build_cs_vector_store.py # 向量解析器生成
+│   └── ...
+│
+├── data/                       # 数据集 (包含题库或简历)
+│   ├── cs/                    # QA 场景集合
+│   └── vector_store/          # 向量库落盘点
+│
+├── output/                     # 交互时序日志与报告产出
+│
+└── components/                 # (旧版/参考备选) Python GUI UI 组件
+    └── ...
 ├── data/                       # 数据目录
 │   └── cs/                    # CS 知识库（JSONL 格式）
 │       ├── qa_backend.jsonl

@@ -1,0 +1,32 @@
+# 环境配置
+.env
+.idea/
+.vscode/
+
+# Python 相关
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+
+# 数据和临时文件
+temp_audio/
+output/
+vector_db/
+logs/
+*.log
+
+# 项目大文件
+data/raw_knowledge/
+data/**/*.json
+*.sqlite3
+
+# 系统文件
+.DS_Store
+Thumbs.db

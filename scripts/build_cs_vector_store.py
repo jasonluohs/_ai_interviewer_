@@ -3,11 +3,15 @@ import json
 import os
 import shutil
 import stat
+import sys
 from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 
 from modules.rag_engine import build_vector_store
 
-ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = ROOT / "data" / "cs"
 PERSIST_DIR = ROOT / "vector_db"
 DOMAIN = "cs"

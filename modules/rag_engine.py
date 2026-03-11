@@ -1,4 +1,8 @@
 import os
+# 禁用 Chroma 遥测，避免运行时的警告输出
+os.environ["ANONYMIZED_TELEMETRY"] = "False"
+os.environ["CHROMA_TELEMETRY"] = "False"
+
 from typing import Dict, List, Optional
 from langchain_community.embeddings import DashScopeEmbeddings
 from langchain_chroma import Chroma
@@ -80,7 +84,9 @@ def build_vector_store(
         metadatas=metadatas,
         persist_directory=db_path,
     )
-    vector_db.persist()
+    # 新版 Chroma 在写入时已自动持久化，旧版仍支持 persist()。
+    if hasattr(vector_db, "persist"):
+        vector_db.persist()
     return db_path
 
 '''
