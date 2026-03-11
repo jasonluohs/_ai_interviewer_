@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 面试官</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- 侧边栏 -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h2>面试官设置</h2>
+            </div>
+            
+            <div class="sidebar-content">
+                <!-- 面试官类型选择 -->
+                <div class="setting-group">
+                    <label for="prompt-select">选择面试官类型</label>
+                    <select id="prompt-select">
+                        <option value="温和型面试官">温和型面试官</option>
+                        <option value="正常型面试官（默认）" selected>正常型面试官（默认）</option>
+                        <option value="压力型面试官">压力型面试官</option>
+                        <option value="自定义">自定义</option>
+                    </select>
+                </div>
+                
+                <!-- 提示词预览/编辑 -->
+                <div class="setting-group">
+                    <div class="collapsible" id="prompt-toggle">
+                        <span>查看/微调当前提示词</span>
+                        <span class="arrow">▼</span>
+                    </div>
+                    <div class="collapsible-content" id="prompt-content">
+                        <textarea id="system-prompt" rows="6" placeholder="系统提示词..."></textarea>
+                    </div>
+                </div>
+                
+                <!-- TTS 开关 -->
+                <div class="setting-group checkbox-group">
+                    <label>
+                        <input type="checkbox" id="enable-tts" checked>
+                        <span>开启语音播报（TTS）</span>
+                    </label>
+                </div>
+                
+                <hr class="divider">
+                
+                <!-- RAG 知识库设置 -->
+                <div class="setting-group">
+                    <h3>知识库（RAG）</h3>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="enable-rag" checked>
+                        <span>开启知识库检索</span>
+                    </label>
+                </div>
+                
+                <div class="setting-group rag-settings" id="rag-settings">
+                    <label for="rag-domain">检索领域</label>
+                    <select id="rag-domain">
+                        <option value="cs">cs</option>
+                    </select>
+                    
+                    <label for="rag-topk">检索条数（Top-K）: <span id="topk-value">6</span></label>
+                    <input type="range" id="rag-topk" min="1" max="15" value="6">
+                </div>
+                
+                <hr class="divider">
+                
+                <!-- 简历上传 -->
+                <div class="setting-group">
+                    <h3>📄 简历上传</h3>
+                    <div id="resume-status">
+                        <p class="resume-hint">上传 PDF 简历，让 AI 面试官更了解你</p>
+                    </div>
+                    <div id="resume-upload-area" class="resume-upload-area">
+                        <input type="file" id="resume-input" accept=".pdf" style="display: none;">
+                        <button class="btn btn-upload" id="resume-upload-btn">
+                            📤 选择 PDF 简历
+                        </button>
+                    </div>
+                    <div id="resume-uploaded" class="resume-uploaded" style="display: none;">
+                        <div class="resume-file-info">
+                            <span class="resume-icon">📄</span>
+                            <span id="resume-file-name" class="resume-file-name"></span>
+                        </div>
+                        <button class="btn btn-small btn-danger" id="resume-delete-btn">🗑️ 删除</button>
+                    </div>
+                    <div id="resume-progress" class="resume-progress" style="display: none;">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="resume-progress-fill"></div>
+                        </div>
+                        <p class="progress-text" id="resume-progress-text">正在解析...</p>
+                    </div>
+                </div>
+                
+                <hr class="divider">
+                
+                <!-- 新对话按钮 -->
+                <button class="btn btn-primary" id="new-chat-btn">新对话</button>
+                
+                <p class="sidebar-hint">语音输入需浏览器授权麦克风；TTS 为流式播报。</p>
+            </div>
+        </aside>
+        
+        <!-- 主内容区 -->
+        <main class="main-content">
+            <header class="header">
+                <button class="sidebar-toggle" id="sidebar-toggle">☰</button>
+                <h1>AI 面试官</h1>
+                <p>支持<strong>语音</strong>或<strong>文字</strong>输入，结合<strong>知识库检索(RAG)</strong>与面试官对话。</p>
+                <!-- 面试阶段指示器 -->
+                <div class="phase-indicator" id="phase-indicator"></div>
+            </header>
+            
+            <!-- Tab 导航 -->
+            <nav class="tabs">
+                <button class="tab-btn active" data-tab="voice">🎙️ 语音对话</button>
+                <button class="tab-btn" data-tab="chat">💬 文字对话</button>
+                <button class="tab-btn" data-tab="rag">📚 RAG 知识检索</button>
+                <button class="tab-btn" data-tab="report">📊 面试报告</button>
+            </nav>
+            
+            <!-- Tab 内容 -->
+            <div class="tab-content">
+                <!-- 语音对话 Tab -->
+                <div class="tab-pane active" id="tab-voice">
+                    <h3>🎙️ 语音面试模式</h3>
+                    <p class="tab-hint">录音结束后自动识别并发送，面试官回复自动语音播放</p>
+                    
+                    <div class="voice-controls">
+                        <button class="record-btn" id="record-btn">
+                            <span class="record-icon">🎤</span>
+                            <span class="record-text">点击开始录音</span>
+                        </button>
+                        <div class="recording-indicator" id="recording-indicator">
+                            <span class="pulse"></span>
+                            <span>正在录音...</span>
+                        </div>
+                    </div>
+                    
+                    <!-- TTS 播放器 -->
+                    <div class="tts-player" id="tts-player">
+                        <div class="tts-header">
+                            <strong>🔊 语音播放</strong>
+                            <span id="tts-status">(等待中)</span>
+                        </div>
+                        <div class="tts-controls">
+                            <button class="tts-btn" id="tts-play">▶️ 播放</button>
+                            <button class="tts-btn" id="tts-pause">⏸️ 暂停</button>
+                            <button class="tts-btn" id="tts-stop">⏹️ 停止</button>
+                            <div class="tts-progress">
+                                <div class="tts-progress-bar" id="tts-progress-bar"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <hr class="divider">
+                    
+                    <!-- 最近对话 -->
+                    <h4>最近对话</h4>
+                    <div class="chat-history" id="voice-history">
+                        <div class="empty-hint">点击上方麦克风开始语音面试</div>
+                    </div>
+                </div>
+                
+                <!-- 文字对话 Tab -->
+                <div class="tab-pane" id="tab-chat">
+                    <div class="chat-container">
+                        <div class="chat-history" id="chat-history">
+                            <div class="empty-hint">暂无聊天记录，在下方输入文字开始对话。</div>
+                        </div>
+                        
+                        <form class="chat-input-form" id="chat-form">
+                            <input type="text" id="chat-input" placeholder="输入文字与面试官对话..." autocomplete="off">
+                            <button type="submit" class="btn btn-send">发送</button>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- RAG 知识检索 Tab -->
+                <div class="tab-pane" id="tab-rag">
+                    <h3>📚 RAG 知识检索记录</h3>
+                    <div id="rag-history">
+                        <div class="empty-hint">暂无检索记录。开启 RAG 并发送消息后，检索到的知识片段会在此展示。</div>
+                    </div>
+                </div>
+                
+                <!-- 面试报告 Tab -->
+                <div class="tab-pane" id="tab-report">
+                    <h3>📊 面试报告</h3>
+                    <p class="tab-hint">结束面试后，可下载对话记录或生成 AI 评价报告</p>
+                    
+                    <div class="report-stats" id="report-stats">
+                        <p>当前对话：<strong id="msg-count">0</strong> 条消息</p>
+                    </div>
+                    
+                    <hr class="divider">
+                    
+                    <h4>下载对话记录</h4>
+                    <div class="download-btns">
+                        <button class="btn" id="download-json">📥 下载 JSON</button>
+                        <button class="btn" id="download-txt">📥 下载 TXT</button>
+                    </div>
+                    
+                    <hr class="divider">
+                    
+                    <h4>AI 面试评价报告</h4>
+                    <button class="btn btn-primary" id="generate-report-btn">🤖 生成 AI 面试评价报告</button>
+                    
+                    <div class="report-content" id="report-content">
+                        <!-- 报告内容将在这里显示 -->
+                    </div>
+                    
+                    <div class="report-download" id="report-download" style="display: none;">
+                        <button class="btn" id="download-report-md">📥 下载报告（Markdown）</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <!-- IDE代码编辑器面板 -->
+        <aside class="ide-panel" id="ide-panel">
+            <div class="ide-header">
+                <h3>📝 代码编辑器</h3>
+                <button class="ide-close-btn" id="ide-close-btn">✕</button>
+            </div>
+            <div class="ide-content">
+                <!-- 语言选择 -->
+                <div class="ide-toolbar">
+                    <label for="code-language">语言:</label>
+                    <select id="code-language">
+                        <option value="python" selected>Python</option>
+                        <option value="java">Java</option>
+                        <option value="cpp">C++</option>
+                        <option value="javascript">JavaScript</option>
+                    </select>
+                </div>
+                
+                <!-- 代码编辑器 -->
+                <div class="code-editor-wrapper">
+                    <textarea id="code-editor" placeholder="# 在这里编写你的代码...
+
+def solution():
+    pass"></textarea>
+                    <div class="line-numbers" id="line-numbers">1</div>
+                </div>
+                
+                <!-- 操作按钮 -->
+                <div class="ide-actions">
+                    <button class="btn btn-submit" id="submit-code-btn">📤 提交代码</button>
+                    <button class="btn btn-clear" id="clear-code-btn">🗑️ 清空</button>
+                </div>
+                
+                <!-- 提交历史 -->
+                <div class="code-history" id="code-history">
+                    <h4>📜 提交历史</h4>
+                    <div class="history-list" id="history-list">
+                        <p class="empty-hint">暂无提交记录</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </div>
+    
+    <!-- 加载提示 -->
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="loading-spinner"></div>
+        <p id="loading-text">正在处理...</p>
+    </div>
+    
+    <!-- JavaScript 模块 -->
+    <script src="/static/js/tts-stream.js"></script>
+    <script src="/static/js/audio.js"></script>
+    <script src="/static/js/chat.js"></script>
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
