@@ -280,6 +280,9 @@ class ChatModule {
             }
 
             this.history.push({ role: 'assistant', content: fullResponse });
+            this._streamingEl = null;
+            this._streamingTarget = null;
+            this.renderHistory();   // 流式结束后重新渲染，确保 Markdown 干净渲染
             this.updateMsgCount();
 
         } catch (error) {
@@ -308,6 +311,13 @@ class ChatModule {
             html += this.createMessageHTML(msg.role, msg.content);
         }
         this.chatHistory.innerHTML = html;
+
+        // 对已渲染的代码块应用语法高亮
+        if (typeof hljs !== 'undefined') {
+            this.chatHistory.querySelectorAll('pre code').forEach(block => {
+                try { hljs.highlightElement(block); } catch(_) {}
+            });
+        }
         this.scrollToBottom();
 
         // Voice history (last 4)
@@ -322,6 +332,21 @@ class ChatModule {
     createMessageHTML(role, content, id = '') {
         const cssClass = role === 'user' ? 'user' : 'assistant';
         const idAttr = id ? `id="${id}"` : '';
+        if (role === 'assistant') {
+            let rendered = '';
+            try {
+                if (window.mdRenderer && window.mdRenderer.ready) {
+                    rendered = window.mdRenderer.render(content);
+                } else if (typeof marked !== 'undefined' && typeof marked.parse === 'function') {
+                    rendered = marked.parse(content);
+                }
+            } catch (e) {
+                console.error('[Chat] createMessageHTML markdown 渲染失败:', e);
+            }
+            if (rendered) {
+                return `<div class="chat-message ${cssClass}" ${idAttr}><div class="md-body">${rendered}</div></div>`;
+            }
+        }
         return `<div class="chat-message ${cssClass}" ${idAttr}><p>${this.escapeHtml(content)}</p></div>`;
     }
 
@@ -330,20 +355,39 @@ class ChatModule {
         const emptyHint = this.chatHistory.querySelector('.empty-state');
         if (emptyHint) emptyHint.remove();
 
-        const userMsg = this.history[this.history.length - 1];
-        if (userMsg) {
-            this.chatHistory.innerHTML += this.createMessageHTML('user', userMsg.content);
-        }
-        this.chatHistory.innerHTML += this.createMessageHTML('assistant', '思考中...', id);
+        // 使用 insertAdjacentHTML 避免 innerHTML += 导致的 DOM 序列化问题
+        const placeholderHTML = `<div class="chat-message assistant" id="${id}"><div class="md-body"><p>思考中...</p></div></div>`;
+        this.chatHistory.insertAdjacentHTML('beforeend', placeholderHTML);
+
+        // 存储直接引用，避免后续查找失败
+        this._streamingEl = document.getElementById(id);
+        this._streamingTarget = this._streamingEl ? this._streamingEl.querySelector('.md-body') : null;
         this.scrollToBottom();
     }
 
     updateAssistantMessage(id, content) {
-        const msgEl = document.getElementById(id);
-        if (msgEl) {
-            msgEl.querySelector('p').textContent = content;
-            this.scrollToBottom();
+        // 优先使用存储的直接引用
+        const target = this._streamingTarget || (() => {
+            const el = document.getElementById(id);
+            return el ? (el.querySelector('.md-body') || el.querySelector('p')) : null;
+        })();
+
+        if (!target) return;
+
+        // 多级回退策略确保 Markdown 一定被渲染
+        try {
+            if (window.mdRenderer && window.mdRenderer.ready) {
+                window.mdRenderer.renderTo(target, content);
+            } else if (typeof marked !== 'undefined' && typeof marked.parse === 'function') {
+                target.innerHTML = marked.parse(content);
+            } else {
+                target.textContent = content;
+            }
+        } catch (e) {
+            console.error('[Chat] Markdown 渲染失败，降级为纯文本:', e);
+            target.textContent = content;
         }
+        this.scrollToBottom();
     }
 
     scrollToBottom() {

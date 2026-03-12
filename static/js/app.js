@@ -418,7 +418,11 @@ class App {
                             const data = JSON.parse(line.slice(6));
                             if (data.type === 'text') {
                                 this.reportContent = data.content;
-                                reportContent.textContent = this.reportContent;
+                                if (window.mdRenderer) {
+                                    window.mdRenderer.renderTo(reportContent, this.reportContent);
+                                } else {
+                                    reportContent.textContent = this.reportContent;
+                                }
                             } else if (data.type === 'done') {
                                 if (reportDownload) reportDownload.style.display = 'block';
                             } else if (data.type === 'error') {

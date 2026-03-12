@@ -758,6 +758,189 @@ body::before {
     font-size: 14px;
 }
 
+/* ==================== Markdown Body (chat + report) ==================== */
+.md-body {
+    font-size: 14px;
+    line-height: 1.8;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.md-body > *:first-child { margin-top: 0; }
+.md-body > *:last-child  { margin-bottom: 0; }
+
+/* Headings */
+.md-body h1, .md-body h2, .md-body h3,
+.md-body h4, .md-body h5, .md-body h6 {
+    color: var(--text-bright);
+    font-weight: 600;
+    margin: 16px 0 8px;
+    line-height: 1.4;
+}
+.md-body h1 { font-size: 1.4em; border-bottom: 1px solid var(--border-subtle); padding-bottom: 6px; }
+.md-body h2 { font-size: 1.25em; }
+.md-body h3 { font-size: 1.1em; }
+.md-body h4, .md-body h5, .md-body h6 { font-size: 1em; }
+
+/* Paragraphs */
+.md-body p {
+    margin: 8px 0;
+    font-size: 14px;
+}
+
+/* Lists */
+.md-body ul, .md-body ol {
+    margin: 8px 0;
+    padding-left: 24px;
+}
+.md-body li {
+    margin: 4px 0;
+}
+.md-body li > p {
+    margin: 4px 0;
+}
+
+/* Inline code */
+.md-body code:not(pre code) {
+    background: rgba(0, 212, 255, 0.08);
+    color: var(--neon-blue);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+    border: 1px solid rgba(0, 212, 255, 0.15);
+}
+
+/* Code blocks */
+.md-body pre {
+    background: rgba(6, 10, 20, 0.85);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    margin: 12px 0;
+    overflow-x: auto;
+    position: relative;
+}
+.md-body pre code {
+    background: none;
+    border: none;
+    padding: 0;
+    color: var(--text-primary);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+/* Copy button for code blocks */
+.code-copy-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(100, 116, 139, 0.25);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-secondary);
+    width: 30px;
+    height: 30px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    opacity: 0;
+    transition: opacity 0.2s, background 0.2s, color 0.2s;
+}
+.md-body pre:hover .code-copy-btn {
+    opacity: 1;
+}
+.code-copy-btn:hover {
+    background: rgba(0, 212, 255, 0.15);
+    color: var(--neon-blue);
+}
+.code-copy-btn.copied {
+    color: var(--success);
+}
+
+/* Blockquote */
+.md-body blockquote {
+    border-left: 3px solid var(--neon-purple);
+    margin: 12px 0;
+    padding: 8px 16px;
+    background: rgba(168, 85, 247, 0.06);
+    color: var(--text-secondary);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+.md-body blockquote p {
+    margin: 4px 0;
+}
+
+/* Tables */
+.md-body table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0;
+    font-size: 13px;
+}
+.md-body th, .md-body td {
+    border: 1px solid var(--border-subtle);
+    padding: 8px 12px;
+    text-align: left;
+}
+.md-body th {
+    background: rgba(0, 212, 255, 0.08);
+    color: var(--text-bright);
+    font-weight: 600;
+}
+.md-body tr:nth-child(even) {
+    background: rgba(20, 26, 48, 0.3);
+}
+
+/* Horizontal rule */
+.md-body hr {
+    border: none;
+    border-top: 1px solid var(--border-subtle);
+    margin: 16px 0;
+}
+
+/* Links */
+.md-body a {
+    color: var(--neon-blue);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s;
+}
+.md-body a:hover {
+    border-bottom-color: var(--neon-blue);
+}
+
+/* Strong & Emphasis */
+.md-body strong {
+    color: var(--text-bright);
+    font-weight: 600;
+}
+.md-body em {
+    color: var(--text-primary);
+    font-style: italic;
+}
+
+/* Images */
+.md-body img {
+    max-width: 100%;
+    border-radius: var(--radius-sm);
+    margin: 8px 0;
+}
+
+/* Report area — apply md-body overrides */
+.report-content .md-body {
+    white-space: normal;
+}
+
+/* User messages keep plain text (no markdown) */
+.chat-message.user .md-body {
+    /* should not exist, but safety fallback */
+    color: #fff;
+}
+
 /* ==================== TTS Float ==================== */
 .tts-float {
     position: absolute;
@@ -1248,7 +1431,6 @@ body::before {
     border: 1px solid var(--border-subtle);
     border-radius: var(--radius-md);
     min-height: 60px;
-    white-space: pre-wrap;
     line-height: 1.8;
     font-size: 13px;
     color: var(--text-primary);

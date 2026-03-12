@@ -250,10 +250,13 @@ async def generate_tts_audio(text: str) -> Optional[str]:
 
 @app.get("/")
 async def root():
-    """根路径 - 返回前端页面"""
+    """根路径 - 返回前端页面（禁用缓存确保加载最新版本）"""
     index_file = static_dir / "index.html"
     if index_file.exists():
-        return FileResponse(str(index_file))
+        return FileResponse(
+            str(index_file),
+            headers={"Cache-Control": "no-cache, no-store, must-revalidate"}
+        )
     return {"message": "AI 面试官 API", "version": "2.0.0"}
 
 
