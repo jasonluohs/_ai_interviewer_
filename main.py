@@ -578,4 +578,10 @@ async def download_report(format: str):
 # ==================== 启动入口 ====================
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="127.0.0.1", port=8000)
+    
+    # 从环境变量中读取 PORT，Render 会自动注入这个变量
+    # 如果本地运行，默认使用 8000 端口
+    port = int(os.environ.get("PORT", 8000))
+    
+    # 将 host 改为 "0.0.0.0" 以允许外部访问
+    uvicorn.run(app, host="0.0.0.0", port=port)
