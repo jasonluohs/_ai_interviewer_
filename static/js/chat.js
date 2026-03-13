@@ -10,6 +10,7 @@ class ChatModule {
         this.currentEventSource = null;
         this.currentPhase = 0;
         this.ideVisible = false;
+        this.compactMode = false;  // 精简对话模式
 
         this.chatForm = document.getElementById('chat-form');
         this.chatInput = document.getElementById('chat-input');
@@ -20,6 +21,20 @@ class ChatModule {
 
         this.bindEvents();
         this.loadHistory();
+    }
+
+    /* ==================== Compact Mode ==================== */
+    setCompactMode(enabled) {
+        this.compactMode = enabled;
+        this.renderHistory();
+        // 模式切换时重置音频队列
+        if (window.ttsPlayer) {
+            window.ttsPlayer.reset();
+        }
+    }
+
+    getCompactMode() {
+        return this.compactMode;
     }
 
     /* ==================== Phase Detection ==================== */
@@ -218,7 +233,10 @@ class ChatModule {
         const assistantMsgId = `msg-${Date.now()}`;
         this.addAssistantPlaceholder(assistantMsgId);
 
-        if (settings.enable_tts && window.ttsPlayer) {
+        // 精简模式下，新消息开始时重置音频队列
+        if (this.compactMode && window.ttsPlayer) {
+            window.ttsPlayer.reset();
+        } else if (settings.enable_tts && window.ttsPlayer) {
             window.ttsPlayer.reset();
         }
 
@@ -307,8 +325,32 @@ class ChatModule {
         }
 
         let html = '';
-        for (const msg of this.history) {
-            html += this.createMessageHTML(msg.role, msg.content);
+        let messagesToRender = this.history;
+
+        // 精简模式：只显示最后一轮对话（最新的 user + assistant）
+        if (this.compactMode && this.history.length > 0) {
+            // 添加精简模式指示器
+            html += `
+                <div class="compact-mode-indicator">
+                    <i class="fas fa-compress-alt"></i>
+                    <span>精简模式 - 仅显示当前轮次</span>
+                    <span class="compact-total">共 ${Math.ceil(this.history.length / 2)} 轮对话</span>
+                </div>`;
+
+            // 找到最后一轮对话
+            const lastMessages = [];
+            for (let i = this.history.length - 1; i >= 0; i--) {
+                lastMessages.unshift(this.history[i]);
+                if (this.history[i].role === 'user') {
+                    break;
+                }
+            }
+            messagesToRender = lastMessages;
+        }
+
+        for (const msg of messagesToRender) {
+            const animClass = this.compactMode ? ' compact-animate' : '';
+            html += this.createMessageHTML(msg.role, msg.content, '', animClass);
         }
         this.chatHistory.innerHTML = html;
 
@@ -329,7 +371,7 @@ class ChatModule {
         }
     }
 
-    createMessageHTML(role, content, id = '') {
+    createMessageHTML(role, content, id = '', extraClass = '') {
         const cssClass = role === 'user' ? 'user' : 'assistant';
         const idAttr = id ? `id="${id}"` : '';
         if (role === 'assistant') {
@@ -344,10 +386,10 @@ class ChatModule {
                 console.error('[Chat] createMessageHTML markdown 渲染失败:', e);
             }
             if (rendered) {
-                return `<div class="chat-message ${cssClass}" ${idAttr}><div class="md-body">${rendered}</div></div>`;
+                return `<div class="chat-message ${cssClass}${extraClass}" ${idAttr}><div class="md-body">${rendered}</div></div>`;
             }
         }
-        return `<div class="chat-message ${cssClass}" ${idAttr}><p>${this.escapeHtml(content)}</p></div>`;
+        return `<div class="chat-message ${cssClass}${extraClass}" ${idAttr}><p>${this.escapeHtml(content)}</p></div>`;
     }
 
     addAssistantPlaceholder(id) {

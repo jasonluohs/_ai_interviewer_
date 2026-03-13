@@ -1606,3 +1606,70 @@ body::before {
         transition-duration: 0.01ms !important;
     }
 }
+
+/* ==================== Compact Mode Styles ==================== */
+/* 精简模式指示器 */
+.compact-mode-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px 20px;
+    margin: 0 auto 20px auto;
+    max-width: 400px;
+    background: linear-gradient(135deg, rgba(0, 212, 255, 0.1) 0%, rgba(168, 85, 247, 0.1) 100%);
+    border: 1px solid rgba(0, 212, 255, 0.2);
+    border-radius: var(--radius-pill);
+    color: var(--neon-blue);
+    font-size: 13px;
+    font-weight: 500;
+    backdrop-filter: blur(8px);
+    animation: compactIndicatorFadeIn 0.4s ease-out;
+}
+
+.compact-mode-indicator i {
+    font-size: 14px;
+    color: var(--neon-cyan);
+}
+
+.compact-mode-indicator .compact-total {
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-weight: 400;
+    padding-left: 10px;
+    border-left: 1px solid rgba(100, 116, 139, 0.3);
+}
+
+/* 精简模式消息动画 */
+.chat-message.compact-animate {
+    animation: compactMessageFadeIn 0.5s ease-out;
+}
+
+@keyframes compactIndicatorFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes compactMessageFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 精简模式提示文字 */
+.compact-mode-hint {
+    margin-top: 6px;
+    font-size: 11px;
+    color: var(--text-muted);
+}

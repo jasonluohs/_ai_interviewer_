@@ -37,3 +37,6 @@ data/raw_knowledge/
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# AI编程相关
+.qoder/

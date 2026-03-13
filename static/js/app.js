@@ -11,7 +11,8 @@ class App {
             enable_tts: true,
             enable_rag: true,
             rag_domain: 'cs',
-            rag_top_k: 6
+            rag_top_k: 6,
+            compact_mode: false  // 精简对话模式
         };
 
         this.presets = {};
@@ -205,6 +206,19 @@ class App {
             });
             ragTopk.addEventListener('change', () => this.saveSettings());
         }
+
+        // 精简模式开关
+        const compactMode = document.getElementById('compact-mode');
+        if (compactMode) {
+            compactMode.addEventListener('change', () => {
+                this.settings.compact_mode = compactMode.checked;
+                this.saveSettings();
+                // 通知聊天模块切换模式
+                if (window.chat) {
+                    window.chat.setCompactMode(compactMode.checked);
+                }
+            });
+        }
     }
 
     /* ==================== Report ==================== */
@@ -336,6 +350,14 @@ class App {
         if (ragDomain) ragDomain.value = this.settings.rag_domain;
         if (ragTopk) ragTopk.value = this.settings.rag_top_k;
         if (topkValue) topkValue.textContent = this.settings.rag_top_k;
+
+        // 精简模式
+        const compactMode = document.getElementById('compact-mode');
+        if (compactMode) compactMode.checked = this.settings.compact_mode;
+        // 同步到聊天模块
+        if (window.chat) {
+            window.chat.setCompactMode(this.settings.compact_mode);
+        }
     }
 
     async loadRagDomains() {

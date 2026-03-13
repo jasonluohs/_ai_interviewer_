@@ -80,6 +80,7 @@ class SettingsModel(BaseModel):
     enable_rag: bool = True
     rag_domain: str = "cs"
     rag_top_k: int = 6
+    compact_mode: bool = False  # 精简对话模式
 
 
 # ==================== 全局状态 ====================
