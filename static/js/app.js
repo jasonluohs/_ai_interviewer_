@@ -21,6 +21,9 @@ class App {
         this.resumeFileName = '';
         this.radarChart = null;  // 雷达图实例
 
+        // 模式管理
+        this.interviewMode = null;  // 'standard' | 'immersive'
+
         this.loadingOverlay = document.getElementById('loading-overlay');
         this.loadingText = document.getElementById('loading-text');
 
@@ -30,11 +33,26 @@ class App {
     async init() {
         console.log('🚀 初始化 Cybernetic Command...');
 
+        // 检查是否有保存的模式选择
+        const savedMode = localStorage.getItem('interviewMode');
+        if (savedMode) {
+            // 有保存的模式，直接进入
+            this.hideModeSelector();
+            this.selectMode(savedMode, false);
+        } else {
+            // 没有保存的模式，显示模式选择器
+            this.showModeSelector();
+        }
+
+        // 绑定模式选择器事件
+        this.bindModeSelectorEvents();
+
         this.bindSidebarEvents();
         this.bindSettingsEvents();
         this.bindDrawerEvents();
         this.bindReportEvents();
         this.bindResumeEvents();
+        this.bindImmersiveEvents();
 
         await this.loadPresets();
         await this.loadSettings();
@@ -43,6 +61,284 @@ class App {
         await this.loadResumeStatus();
 
         console.log('✅ 初始化完成');
+    }
+
+    /* ==================== Mode Management ==================== */
+    showModeSelector() {
+        const selector = document.getElementById('mode-selector');
+        if (selector) {
+            selector.classList.remove('hidden');
+        }
+    }
+
+    hideModeSelector() {
+        const selector = document.getElementById('mode-selector');
+        if (selector) {
+            selector.classList.add('hidden');
+        }
+    }
+
+    bindModeSelectorEvents() {
+        const modeOptions = document.querySelectorAll('.mode-option');
+        modeOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                const mode = option.getAttribute('data-mode');
+                if (mode) {
+                    // 添加选中动画
+                    option.classList.add('selecting');
+                    setTimeout(() => {
+                        this.selectMode(mode, true);
+                        this.hideModeSelector();
+                    }, 300);
+                }
+            });
+        });
+    }
+
+    selectMode(mode, save = true) {
+        this.interviewMode = mode;
+        if (save) {
+            localStorage.setItem('interviewMode', mode);
+        }
+
+        // 移除所有模式类
+        document.body.classList.remove('standard-mode', 'immersive-mode');
+
+        if (mode === 'standard') {
+            this.switchToStandardMode();
+        } else if (mode === 'immersive') {
+            this.switchToImmersiveMode();
+        }
+
+        console.log(`🎯 已切换到${mode === 'immersive' ? '沉浸式' : '标准'}模式`);
+    }
+
+    switchToStandardMode() {
+        document.body.classList.add('standard-mode');
+        
+        // 显示标准模式UI
+        const commandBody = document.querySelector('.command-body');
+        if (commandBody) commandBody.style.display = '';
+
+        // 隐藏沉浸式UI
+        const immersiveStage = document.getElementById('immersive-stage');
+        if (immersiveStage) immersiveStage.classList.remove('active');
+
+        const settingsToggle = document.getElementById('immersive-settings-toggle');
+        if (settingsToggle) settingsToggle.classList.remove('visible');
+
+        const settingsPanel = document.getElementById('immersive-settings-panel');
+        if (settingsPanel) {
+            settingsPanel.classList.remove('visible', 'show');
+        }
+
+        // 恢复TTS设置的可编辑性
+        const enableTts = document.getElementById('enable-tts');
+        if (enableTts) enableTts.disabled = false;
+    }
+
+    switchToImmersiveMode() {
+        document.body.classList.add('immersive-mode');
+
+        // 显示沉浸式UI
+        const immersiveStage = document.getElementById('immersive-stage');
+        if (immersiveStage) immersiveStage.classList.add('active');
+
+        const settingsToggle = document.getElementById('immersive-settings-toggle');
+        if (settingsToggle) settingsToggle.classList.add('visible');
+
+        // 强制开启TTS
+        this.settings.enable_tts = true;
+        const enableTts = document.getElementById('enable-tts');
+        if (enableTts) {
+            enableTts.checked = true;
+            enableTts.disabled = true;
+        }
+
+        // 同步沉浸式面板RAG设置
+        const immersiveRag = document.getElementById('immersive-enable-rag');
+        if (immersiveRag) {
+            immersiveRag.checked = this.settings.enable_rag;
+        }
+
+        // 更新沉浸式简历按钮状态
+        this.updateImmersiveResumeBtn();
+
+        // 更新沉浸式消息计数
+        this.updateImmersiveMsgCount();
+
+        this.saveSettings();
+    }
+
+    /* ==================== Immersive Mode Events ==================== */
+    bindImmersiveEvents() {
+        // 设置面板开关
+        const settingsToggle = document.getElementById('immersive-settings-toggle');
+        const settingsPanel = document.getElementById('immersive-settings-panel');
+        const settingsClose = document.getElementById('immersive-settings-close');
+
+        if (settingsToggle && settingsPanel) {
+            settingsToggle.addEventListener('click', () => {
+                this.toggleImmersiveSettings();
+            });
+        }
+
+        if (settingsClose) {
+            settingsClose.addEventListener('click', () => {
+                this.closeImmersiveSettings();
+            });
+        }
+
+        // RAG开关
+        const immersiveRag = document.getElementById('immersive-enable-rag');
+        if (immersiveRag) {
+            immersiveRag.addEventListener('change', () => {
+                this.settings.enable_rag = immersiveRag.checked;
+                // 同步到标准模式的RAG开关
+                const enableRag = document.getElementById('enable-rag');
+                if (enableRag) enableRag.checked = immersiveRag.checked;
+                const ragSettings = document.getElementById('rag-settings');
+                if (ragSettings) ragSettings.style.display = immersiveRag.checked ? 'block' : 'none';
+                this.saveSettings();
+            });
+        }
+
+        // 简历上传按钮
+        const immersiveResumeBtn = document.getElementById('immersive-resume-btn');
+        if (immersiveResumeBtn) {
+            immersiveResumeBtn.addEventListener('click', () => {
+                const resumeInput = document.getElementById('resume-input');
+                if (resumeInput) resumeInput.click();
+            });
+        }
+
+        // IDE按钮
+        const immersiveIdeBtn = document.getElementById('immersive-ide-btn');
+        if (immersiveIdeBtn) {
+            immersiveIdeBtn.addEventListener('click', () => {
+                if (window.chat) window.chat.showIDEPanel();
+                this.closeImmersiveSettings();
+            });
+        }
+
+        // 报告按钮
+        const immersiveReportBtn = document.getElementById('immersive-report-btn');
+        if (immersiveReportBtn) {
+            immersiveReportBtn.addEventListener('click', () => {
+                const reportDrawer = document.getElementById('report-drawer');
+                if (reportDrawer) {
+                    this.closeAllDrawers();
+                    reportDrawer.classList.add('show');
+                    document.getElementById('toggle-report-btn')?.classList.add('active');
+                }
+                this.closeImmersiveSettings();
+            });
+        }
+
+        // 新对话按钮
+        const immersiveNewChatBtn = document.getElementById('immersive-new-chat-btn');
+        if (immersiveNewChatBtn) {
+            immersiveNewChatBtn.addEventListener('click', () => {
+                if (confirm('确定要开始新对话吗？当前对话历史将被清空。')) {
+                    window.chat?.clearHistory();
+                    this.reportContent = '';
+                    this.resetPhaseTimeline();
+                    this.updateImmersivePhase(0);
+                    this.updateImmersiveMsgCount();
+                    // 更新沉浸式状态
+                    const statusEl = document.getElementById('immersive-status');
+                    if (statusEl) statusEl.textContent = '点击麦克风开始面试';
+                }
+                this.closeImmersiveSettings();
+            });
+        }
+
+        // 切换模式按钮
+        const switchModeBtn = document.getElementById('immersive-switch-mode-btn');
+        if (switchModeBtn) {
+            switchModeBtn.addEventListener('click', () => {
+                this.selectMode('standard', true);
+                this.closeImmersiveSettings();
+            });
+        }
+    }
+
+    toggleImmersiveSettings() {
+        const settingsPanel = document.getElementById('immersive-settings-panel');
+        if (settingsPanel) {
+            if (settingsPanel.classList.contains('show')) {
+                this.closeImmersiveSettings();
+            } else {
+                settingsPanel.classList.add('visible');
+                // 延迟添加show类以触发动画
+                requestAnimationFrame(() => {
+                    settingsPanel.classList.add('show');
+                });
+            }
+        }
+    }
+
+    closeImmersiveSettings() {
+        const settingsPanel = document.getElementById('immersive-settings-panel');
+        if (settingsPanel) {
+            settingsPanel.classList.remove('show');
+            setTimeout(() => {
+                if (!settingsPanel.classList.contains('show')) {
+                    settingsPanel.classList.remove('visible');
+                }
+            }, 350);
+        }
+    }
+
+    updateImmersiveResumeBtn() {
+        const btn = document.getElementById('immersive-resume-btn');
+        if (btn) {
+            if (this.resumeUploaded) {
+                btn.innerHTML = '<i class="fas fa-check"></i> 已上传';
+                btn.classList.add('cyber-btn-success');
+            } else {
+                btn.innerHTML = '<i class="fas fa-upload"></i> 上传';
+                btn.classList.remove('cyber-btn-success');
+            }
+        }
+    }
+
+    updateImmersivePhase(phase) {
+        const phaseEl = document.getElementById('immersive-phase');
+        if (!phaseEl) return;
+
+        const phaseNames = ['面试开始', '自我介绍', '项目经历', '技术提问', '代码编程', '反问环节', '面试结束'];
+        phaseEl.textContent = phaseNames[phase] || '面试中';
+    }
+
+    updateImmersiveMsgCount() {
+        const countEl = document.getElementById('immersive-msg-count');
+        if (countEl && window.chat) {
+            const rounds = Math.ceil(window.chat.history.length / 2);
+            countEl.textContent = `${rounds} 轮对话`;
+        }
+    }
+
+    // 沉浸式模式TTS指示器
+    showImmersiveTTSIndicator() {
+        const indicator = document.getElementById('immersive-tts-indicator');
+        if (indicator) indicator.classList.add('active');
+    }
+
+    hideImmersiveTTSIndicator() {
+        const indicator = document.getElementById('immersive-tts-indicator');
+        if (indicator) indicator.classList.remove('active');
+    }
+
+    // 更新沉浸式状态文字
+    updateImmersiveStatus(status) {
+        const statusEl = document.getElementById('immersive-status');
+        if (statusEl) statusEl.textContent = status;
+    }
+
+    // 检查是否在沉浸式模式
+    isImmersiveMode() {
+        return this.interviewMode === 'immersive';
     }
 
     /* ==================== Sidebar ==================== */
@@ -92,6 +388,19 @@ class App {
                     }
                     // Reset phase timeline
                     this.resetPhaseTimeline();
+                }
+            });
+        }
+
+        // Switch to immersive mode button (in sidebar)
+        const switchToImmersiveBtn = document.getElementById('switch-to-immersive-btn');
+        if (switchToImmersiveBtn) {
+            switchToImmersiveBtn.addEventListener('click', () => {
+                this.selectMode('immersive', true);
+                // 关闭侧边栏（移动端）
+                if (window.innerWidth <= 900 && sidebar) {
+                    sidebar.classList.remove('show');
+                    if (sidebarToggle) sidebarToggle.classList.remove('active');
                 }
             });
         }
@@ -788,19 +1097,22 @@ class App {
         const progressArea = document.getElementById('resume-progress');
         const fileNameEl = document.getElementById('resume-file-name');
         const statusEl = document.getElementById('resume-status');
-
+    
         if (progressArea) progressArea.style.display = 'none';
-
+    
         if (this.resumeUploaded) {
             if (uploadArea) uploadArea.style.display = 'none';
             if (uploadedArea) uploadedArea.style.display = 'flex';
             if (fileNameEl) fileNameEl.textContent = this.resumeFileName;
-            if (statusEl) statusEl.innerHTML = '<p class="hint-text" style="color: var(--success);">✅ 简历已上传，面试将个性化进行</p>';
+            if (statusEl) statusEl.innerHTML = '<p class="hint-text" style="color: var(--success);">\u2705 简历已上传，面试将个性化进行</p>';
         } else {
             if (uploadArea) uploadArea.style.display = 'block';
             if (uploadedArea) uploadedArea.style.display = 'none';
             if (statusEl) statusEl.innerHTML = '<p class="hint-text">上传 PDF 简历，AI 将更了解你</p>';
         }
+    
+        // 同步更新沉浸式模式的简历按钮
+        this.updateImmersiveResumeBtn();
     }
 
     /* ==================== Utilities ==================== */

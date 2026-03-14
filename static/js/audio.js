@@ -1,6 +1,7 @@
 /**
  * 音频录制模块 — Cybernetic Command
  * Web Audio API 录音，适配新 UI
+ * 注意：沉浸式模式现在由 vad.js 统一处理，与标准模式行为一致
  */
 
 class AudioRecorder {
@@ -10,17 +11,16 @@ class AudioRecorder {
         this.isRecording = false;
         this.stream = null;
 
+        // 标准模式麦克风按钮（备用，主要由VAD处理）
         this.recordBtn = document.getElementById('record-btn');
         this.recordIconEl = document.getElementById('record-icon-i');
         this.recordingIndicator = document.getElementById('recording-indicator');
 
-        this.bindEvents();
-    }
+        // 沉浸式模式麦克风按钮（现在由VAD统一处理）
+        this.immersiveRecordBtn = document.getElementById('immersive-record-btn');
+        this.immersiveRecordIcon = document.getElementById('immersive-record-icon');
 
-    bindEvents() {
-        if (this.recordBtn) {
-            this.recordBtn.addEventListener('click', () => this.toggleRecording());
-        }
+        // 不再绑定点击事件，由vad.js统一处理
     }
 
     async toggleRecording() {
@@ -59,9 +59,11 @@ class AudioRecorder {
             this.mediaRecorder.start();
             this.isRecording = true;
             this.updateUI(true);
+            this.updateImmersiveStatus('录音中...');
             console.log('🎤 开始录音');
         } catch (error) {
             console.error('无法访问麦克风:', error);
+            this.updateImmersiveStatus('麦克风访问失败');
             alert('无法访问麦克风，请确保已授权浏览器访问麦克风权限。');
         }
     }
@@ -74,6 +76,7 @@ class AudioRecorder {
                 this.stream.getTracks().forEach(track => track.stop());
             }
             this.updateUI(false);
+            this.updateImmersiveStatus('正在识别...');
             console.log('🛑 停止录音');
         }
     }
@@ -82,7 +85,12 @@ class AudioRecorder {
         if (this.audioChunks.length === 0) return;
 
         const audioBlob = new Blob(this.audioChunks, { type: 'audio/wav' });
-        window.app?.showLoading('正在识别语音...');
+        
+        // 根据模式显示不同的加载提示
+        const isImmersive = window.app?.isImmersiveMode();
+        if (!isImmersive) {
+            window.app?.showLoading('正在识别语音...');
+        }
 
         try {
             const formData = new FormData();
@@ -96,15 +104,24 @@ class AudioRecorder {
 
             if (result.status === 'ok' && result.text) {
                 console.log('✅ 识别结果:', result.text);
+                this.updateImmersiveStatus('识别成功，正在发送...');
                 if (window.chat) window.chat.sendMessage(result.text);
             } else {
-                alert('语音识别失败: ' + (result.message || '未识别到有效内容'));
+                this.updateImmersiveStatus('识别失败，请重试');
+                if (!isImmersive) {
+                    alert('语音识别失败: ' + (result.message || '未识别到有效内容'));
+                }
             }
         } catch (error) {
             console.error('ASR 请求失败:', error);
-            alert('语音识别请求失败，请检查网络连接。');
+            this.updateImmersiveStatus('网络错误，请重试');
+            if (!isImmersive) {
+                alert('语音识别请求失败，请检查网络连接。');
+            }
         } finally {
-            window.app?.hideLoading();
+            if (!isImmersive) {
+                window.app?.hideLoading();
+            }
         }
     }
 
@@ -123,6 +140,7 @@ class AudioRecorder {
     }
 
     updateUI(recording) {
+        // 更新标准模式UI
         if (this.recordBtn) {
             this.recordBtn.classList.toggle('recording', recording);
         }
@@ -131,6 +149,21 @@ class AudioRecorder {
         }
         if (this.recordingIndicator) {
             this.recordingIndicator.classList.toggle('show', recording);
+        }
+
+        // 更新沉浸式模式UI
+        if (this.immersiveRecordBtn) {
+            this.immersiveRecordBtn.classList.toggle('recording', recording);
+        }
+        if (this.immersiveRecordIcon) {
+            this.immersiveRecordIcon.className = recording ? 'fas fa-stop' : 'fas fa-microphone';
+        }
+    }
+
+    // 更新沉浸式模式状态文字
+    updateImmersiveStatus(text) {
+        if (window.app?.isImmersiveMode()) {
+            window.app.updateImmersiveStatus(text);
         }
     }
 }

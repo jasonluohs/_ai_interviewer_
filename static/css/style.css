@@ -642,6 +642,19 @@ body::before {
     font-size: 12px;
 }
 
+/* Immersive mode switch button */
+.cyber-btn-immersive {
+    background: linear-gradient(135deg, var(--neon-purple) 0%, #c084fc 100%);
+    border: none;
+    color: #fff;
+    font-weight: 600;
+}
+
+.cyber-btn-immersive:hover {
+    box-shadow: 0 0 20px rgba(168, 85, 247, 0.5);
+    opacity: 0.95;
+}
+
 .full-width {
     width: 100%;
 }
@@ -1172,6 +1185,19 @@ body::before {
     box-shadow: 0 0 18px rgba(245, 158, 11, 0.35);
 }
 
+.record-orb.tts-playing {
+    border-color: var(--neon-purple);
+    color: var(--neon-purple);
+    background: rgba(168, 85, 247, 0.16);
+    box-shadow: 0 0 18px rgba(168, 85, 247, 0.35);
+    animation: recordOrbTTSPulse 2s ease-in-out infinite;
+}
+
+@keyframes recordOrbTTSPulse {
+    0%, 100% { box-shadow: 0 0 18px rgba(168, 85, 247, 0.35); }
+    50% { box-shadow: 0 0 28px rgba(168, 85, 247, 0.5); }
+}
+
 .rec-pulse {
     width: 8px;
     height: 8px;
@@ -1289,6 +1315,138 @@ body::before {
     display: flex;
     flex-direction: column;
     overflow: hidden;
+}
+
+/* IDE 题目显示区域 */
+.ide-problem-section {
+    background: linear-gradient(135deg, rgba(0, 212, 255, 0.08) 0%, rgba(168, 85, 247, 0.08) 100%);
+    border: 1px solid rgba(0, 212, 255, 0.2);
+    border-radius: var(--radius-md);
+    margin-bottom: 12px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.ide-problem-section.collapsed .ide-problem-content {
+    max-height: 0;
+    padding: 0 12px;
+    opacity: 0;
+}
+
+.ide-problem-section.collapsed .ide-problem-toggle i {
+    transform: rotate(180deg);
+}
+
+.ide-problem-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    background: rgba(0, 212, 255, 0.05);
+    border-bottom: 1px solid rgba(0, 212, 255, 0.1);
+    cursor: pointer;
+}
+
+.ide-problem-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--neon-cyan);
+}
+
+.ide-problem-title i {
+    font-size: 14px;
+}
+
+.ide-problem-toggle i {
+    transition: transform 0.3s ease;
+    color: var(--text-tertiary);
+}
+
+.ide-problem-content {
+    max-height: 200px;
+    overflow-y: auto;
+    padding: 12px;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--text-primary);
+    transition: all 0.3s ease;
+    opacity: 1;
+}
+
+.ide-problem-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.ide-problem-content::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.ide-problem-content::-webkit-scrollbar-thumb {
+    background: rgba(0, 212, 255, 0.3);
+    border-radius: 3px;
+}
+
+.ide-problem-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 20px;
+    color: var(--text-tertiary);
+    font-style: italic;
+}
+
+.ide-problem-placeholder i {
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.ide-problem-content .md-body {
+    font-size: 13px;
+}
+
+.ide-problem-content .md-body h1,
+.ide-problem-content .md-body h2,
+.ide-problem-content .md-body h3 {
+    font-size: 14px;
+    margin: 8px 0 6px;
+    color: var(--neon-cyan);
+}
+
+.ide-problem-content .md-body p {
+    margin: 6px 0;
+}
+
+.ide-problem-content .md-body code {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 12px;
+}
+
+.ide-problem-content .md-body pre {
+    background: rgba(0, 0, 0, 0.4);
+    padding: 10px;
+    border-radius: var(--radius-sm);
+    overflow-x: auto;
+    margin: 8px 0;
+}
+
+.ide-problem-content .md-body pre code {
+    background: transparent;
+    padding: 0;
+}
+
+.ide-problem-content .md-body ul,
+.ide-problem-content .md-body ol {
+    margin: 6px 0;
+    padding-left: 20px;
+}
+
+.ide-problem-content .md-body li {
+    margin: 4px 0;
 }
 
 .ide-toolbar {
@@ -2061,5 +2219,807 @@ body::before {
     
     .radar-score-bars {
         width: 100%;
+    }
+}
+
+/* ==================== Mode Selector Overlay ==================== */
+.mode-selector-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-deep);
+    background-image: 
+        radial-gradient(ellipse at 30% 40%, rgba(0, 212, 255, 0.08) 0%, transparent 50%),
+        radial-gradient(ellipse at 70% 60%, rgba(168, 85, 247, 0.08) 0%, transparent 50%);
+    animation: modeSelectorFadeIn 0.5s ease-out;
+}
+
+.mode-selector-overlay.hidden {
+    display: none;
+}
+
+@keyframes modeSelectorFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.mode-selector-container {
+    max-width: 900px;
+    width: 90%;
+    padding: 40px;
+    text-align: center;
+}
+
+.mode-selector-header {
+    margin-bottom: 48px;
+}
+
+.mode-selector-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--neon-gradient);
+    border-radius: var(--radius-lg);
+    font-size: 36px;
+    color: #fff;
+    box-shadow: var(--shadow-glow-md);
+    animation: float 3s ease-in-out infinite;
+}
+
+.mode-selector-header h1 {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--text-bright);
+    margin-bottom: 8px;
+    letter-spacing: 1px;
+}
+
+.mode-selector-header p {
+    font-size: 16px;
+    color: var(--text-secondary);
+}
+
+.mode-selector-options {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+}
+
+.mode-option {
+    padding: 32px 28px;
+    background: var(--bg-panel);
+    backdrop-filter: blur(24px);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    text-align: left;
+}
+
+.mode-option:hover {
+    border-color: var(--border-glow);
+    box-shadow: var(--shadow-glow-md), var(--shadow-panel);
+    transform: translateY(-4px);
+}
+
+.mode-option:hover .mode-option-icon {
+    transform: scale(1.1);
+    box-shadow: var(--shadow-glow-md);
+}
+
+.mode-option-icon {
+    width: 64px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    font-size: 28px;
+    color: var(--neon-blue);
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+}
+
+.mode-option[data-mode="immersive"] .mode-option-icon {
+    color: var(--neon-purple);
+}
+
+.mode-option h3 {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-bright);
+    margin-bottom: 10px;
+}
+
+.mode-option > p {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 16px;
+}
+
+.mode-option-features {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.mode-option-features span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: rgba(0, 212, 255, 0.08);
+    border-radius: var(--radius-pill);
+    font-size: 12px;
+    color: var(--text-primary);
+}
+
+.mode-option-features span i {
+    color: var(--success);
+    font-size: 10px;
+}
+
+.mode-option[data-mode="immersive"] .mode-option-features span {
+    background: rgba(168, 85, 247, 0.08);
+}
+
+/* Recommended mode highlight */
+.mode-option-recommended {
+    position: relative;
+    border-color: rgba(168, 85, 247, 0.4);
+    background: linear-gradient(135deg, var(--bg-panel) 0%, rgba(168, 85, 247, 0.08) 100%);
+}
+
+.mode-option-recommended::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: var(--radius-lg);
+    background: linear-gradient(135deg, rgba(168, 85, 247, 0.5) 0%, rgba(0, 212, 255, 0.3) 100%);
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.35s ease;
+}
+
+.mode-option-recommended:hover::before {
+    opacity: 1;
+}
+
+.mode-option-recommended:hover {
+    border-color: transparent;
+}
+
+.mode-recommend-badge {
+    position: absolute;
+    top: -12px;
+    right: 20px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    background: linear-gradient(135deg, var(--neon-purple) 0%, #c084fc 100%);
+    border-radius: var(--radius-pill);
+    font-size: 12px;
+    font-weight: 600;
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(168, 85, 247, 0.4);
+    animation: badgePulse 2s ease-in-out infinite;
+}
+
+.mode-recommend-badge i {
+    font-size: 10px;
+    animation: starTwinkle 1.5s ease-in-out infinite;
+}
+
+@keyframes badgePulse {
+    0%, 100% { box-shadow: 0 4px 16px rgba(168, 85, 247, 0.4); }
+    50% { box-shadow: 0 4px 24px rgba(168, 85, 247, 0.6); }
+}
+
+@keyframes starTwinkle {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(0.9); }
+}
+
+.mode-option-highlight {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-top: 16px;
+    padding: 12px 14px;
+    background: rgba(168, 85, 247, 0.1);
+    border: 1px solid rgba(168, 85, 247, 0.25);
+    border-radius: var(--radius-sm);
+}
+
+.mode-option-highlight i {
+    color: var(--warning);
+    font-size: 14px;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.mode-option-highlight span {
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+/* Mode option active/selected state */
+.mode-option.selecting {
+    border-color: var(--neon-blue);
+    box-shadow: 0 0 40px rgba(0, 212, 255, 0.3);
+}
+
+.mode-option[data-mode="immersive"].selecting {
+    border-color: var(--neon-purple);
+    box-shadow: 0 0 40px rgba(168, 85, 247, 0.3);
+}
+
+@media (max-width: 700px) {
+    .mode-selector-options {
+        grid-template-columns: 1fr;
+    }
+    
+    .mode-selector-container {
+        padding: 24px;
+    }
+    
+    .mode-selector-header h1 {
+        font-size: 24px;
+    }
+}
+
+/* ==================== Immersive Mode Stage ==================== */
+.immersive-stage {
+    display: none;
+    position: absolute;
+    inset: 0;
+    top: var(--bar-height);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-space);
+    z-index: 50;
+}
+
+.immersive-stage.active {
+    display: flex;
+}
+
+.immersive-header {
+    position: absolute;
+    top: 24px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 32px;
+}
+
+.immersive-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--text-secondary);
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.immersive-brand i {
+    font-size: 18px;
+    color: var(--neon-purple);
+}
+
+.immersive-phase {
+    padding: 8px 16px;
+    background: var(--bg-glass);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-pill);
+    font-size: 13px;
+    color: var(--text-primary);
+}
+
+.immersive-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+}
+
+.immersive-mic-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+}
+
+/* Large Microphone Button */
+.immersive-mic-btn {
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    border: 3px solid var(--neon-blue);
+    background: rgba(0, 212, 255, 0.08);
+    color: var(--neon-blue);
+    font-size: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.3s ease;
+    box-shadow: 
+        0 0 40px rgba(0, 212, 255, 0.2),
+        inset 0 0 30px rgba(0, 212, 255, 0.05);
+}
+
+.immersive-mic-btn:hover {
+    background: rgba(0, 212, 255, 0.15);
+    box-shadow: 
+        0 0 60px rgba(0, 212, 255, 0.3),
+        inset 0 0 40px rgba(0, 212, 255, 0.1);
+}
+
+.immersive-ring {
+    position: absolute;
+    inset: -15px;
+    border-radius: 50%;
+    border: 2px solid rgba(0, 212, 255, 0.2);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.immersive-ring-2 {
+    inset: -30px;
+    border-color: rgba(0, 212, 255, 0.15);
+}
+
+.immersive-ring-3 {
+    inset: -45px;
+    border-color: rgba(0, 212, 255, 0.1);
+}
+
+.immersive-mic-btn:hover .immersive-ring {
+    opacity: 1;
+}
+
+/* Recording state */
+.immersive-mic-btn.recording {
+    border-color: var(--error);
+    background: rgba(239, 68, 68, 0.15);
+    color: var(--error);
+    animation: immersiveRecordingPulse 1.5s ease-in-out infinite;
+}
+
+.immersive-mic-btn.recording .immersive-ring {
+    opacity: 1;
+    border-color: rgba(239, 68, 68, 0.3);
+    animation: immersiveRingExpand 2s ease-in-out infinite;
+}
+
+.immersive-mic-btn.recording .immersive-ring-2 {
+    border-color: rgba(239, 68, 68, 0.2);
+    animation-delay: 0.3s;
+}
+
+.immersive-mic-btn.recording .immersive-ring-3 {
+    border-color: rgba(239, 68, 68, 0.1);
+    animation-delay: 0.6s;
+}
+
+@keyframes immersiveRecordingPulse {
+    0%, 100% { box-shadow: 0 0 40px rgba(239, 68, 68, 0.3), inset 0 0 30px rgba(239, 68, 68, 0.05); }
+    50% { box-shadow: 0 0 80px rgba(239, 68, 68, 0.5), inset 0 0 50px rgba(239, 68, 68, 0.1); }
+}
+
+@keyframes immersiveRingExpand {
+    0%, 100% { transform: scale(1); opacity: 0.8; }
+    50% { transform: scale(1.15); opacity: 0.3; }
+}
+
+/* Processing state */
+.immersive-mic-btn.processing {
+    border-color: var(--warning);
+    background: rgba(245, 158, 11, 0.1);
+    color: var(--warning);
+}
+
+/* Listening state - 监听中 */
+.immersive-mic-btn.listening {
+    border-color: var(--neon-cyan);
+    background: rgba(0, 212, 255, 0.12);
+    color: var(--neon-cyan);
+    animation: immersiveListeningPulse 2s ease-in-out infinite;
+}
+
+.immersive-mic-btn.listening .immersive-ring {
+    opacity: 1;
+    border-color: rgba(0, 212, 255, 0.3);
+    animation: immersiveRingExpand 2.5s ease-in-out infinite;
+}
+
+@keyframes immersiveListeningPulse {
+    0%, 100% { box-shadow: 0 0 40px rgba(0, 212, 255, 0.2), inset 0 0 30px rgba(0, 212, 255, 0.05); }
+    50% { box-shadow: 0 0 60px rgba(0, 212, 255, 0.35), inset 0 0 40px rgba(0, 212, 255, 0.08); }
+}
+
+/* Speaking state - 说话中（用户） */
+.immersive-mic-btn.speaking {
+    border-color: var(--success);
+    background: rgba(16, 185, 129, 0.15);
+    color: var(--success);
+    animation: immersiveSpeakingPulse 1s ease-in-out infinite;
+}
+
+.immersive-mic-btn.speaking .immersive-ring {
+    opacity: 1;
+    border-color: rgba(16, 185, 129, 0.4);
+    animation: immersiveRingExpand 1.5s ease-in-out infinite;
+}
+
+.immersive-mic-btn.speaking .immersive-ring-2 {
+    border-color: rgba(16, 185, 129, 0.3);
+    animation-delay: 0.2s;
+}
+
+.immersive-mic-btn.speaking .immersive-ring-3 {
+    border-color: rgba(16, 185, 129, 0.2);
+    animation-delay: 0.4s;
+}
+
+@keyframes immersiveSpeakingPulse {
+    0%, 100% { box-shadow: 0 0 40px rgba(16, 185, 129, 0.3), inset 0 0 30px rgba(16, 185, 129, 0.05); transform: scale(1); }
+    50% { box-shadow: 0 0 70px rgba(16, 185, 129, 0.5), inset 0 0 50px rgba(16, 185, 129, 0.1); transform: scale(1.02); }
+}
+
+/* TTS Playing state - AI说话中 */
+.immersive-mic-btn.tts-playing {
+    border-color: var(--neon-purple);
+    background: rgba(168, 85, 247, 0.12);
+    color: var(--neon-purple);
+    animation: immersiveTTSPlayingPulse 2s ease-in-out infinite;
+    cursor: pointer;
+}
+
+.immersive-mic-btn.tts-playing .immersive-ring {
+    opacity: 1;
+    border-color: rgba(168, 85, 247, 0.3);
+    animation: immersiveRingExpand 3s ease-in-out infinite;
+}
+
+.immersive-mic-btn.tts-playing .immersive-ring-2 {
+    border-color: rgba(168, 85, 247, 0.2);
+    animation-delay: 0.5s;
+}
+
+.immersive-mic-btn.tts-playing .immersive-ring-3 {
+    border-color: rgba(168, 85, 247, 0.1);
+    animation-delay: 1s;
+}
+
+@keyframes immersiveTTSPlayingPulse {
+    0%, 100% { box-shadow: 0 0 40px rgba(168, 85, 247, 0.25), inset 0 0 30px rgba(168, 85, 247, 0.05); }
+    50% { box-shadow: 0 0 60px rgba(168, 85, 247, 0.4), inset 0 0 45px rgba(168, 85, 247, 0.08); }
+}
+
+.immersive-status {
+    font-size: 18px;
+    color: var(--text-secondary);
+    font-weight: 400;
+    text-align: center;
+    min-height: 28px;
+}
+
+/* TTS Indicator */
+.immersive-tts-indicator {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    padding: 24px 40px;
+    background: var(--bg-glass);
+    border: 1px solid rgba(168, 85, 247, 0.3);
+    border-radius: var(--radius-lg);
+    backdrop-filter: blur(16px);
+}
+
+.immersive-tts-indicator.active {
+    display: flex;
+    animation: immersiveTTSFadeIn 0.3s ease-out;
+}
+
+@keyframes immersiveTTSFadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.immersive-tts-wave {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    height: 32px;
+}
+
+.immersive-tts-wave span {
+    width: 4px;
+    height: 12px;
+    background: var(--neon-purple);
+    border-radius: 2px;
+    animation: immersiveWave 1s ease-in-out infinite;
+}
+
+.immersive-tts-wave span:nth-child(1) { animation-delay: 0s; }
+.immersive-tts-wave span:nth-child(2) { animation-delay: 0.1s; }
+.immersive-tts-wave span:nth-child(3) { animation-delay: 0.2s; }
+.immersive-tts-wave span:nth-child(4) { animation-delay: 0.3s; }
+.immersive-tts-wave span:nth-child(5) { animation-delay: 0.4s; }
+
+@keyframes immersiveWave {
+    0%, 100% { height: 12px; }
+    50% { height: 32px; }
+}
+
+.immersive-tts-text {
+    font-size: 14px;
+    color: var(--neon-purple);
+    font-weight: 500;
+}
+
+.immersive-footer {
+    position: absolute;
+    bottom: 32px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+}
+
+.immersive-stats {
+    padding: 10px 20px;
+    background: var(--bg-glass);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-pill);
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+/* ==================== Immersive Settings Panel ==================== */
+.immersive-settings-panel {
+    position: fixed;
+    top: var(--bar-height);
+    right: 0;
+    bottom: 0;
+    width: 320px;
+    background: var(--bg-panel);
+    backdrop-filter: blur(24px);
+    border-left: 1px solid var(--border-subtle);
+    transform: translateX(100%);
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 80;
+    display: none;
+}
+
+.immersive-settings-panel.visible {
+    display: block;
+}
+
+.immersive-settings-panel.show {
+    transform: translateX(0);
+}
+
+.immersive-settings-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.immersive-settings-header h3 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-bright);
+}
+
+.immersive-settings-header h3 i {
+    color: var(--neon-blue);
+}
+
+.immersive-settings-body {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.immersive-setting-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
+.immersive-setting-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    color: var(--text-primary);
+}
+
+.immersive-setting-label i {
+    width: 20px;
+    text-align: center;
+    color: var(--text-secondary);
+}
+
+.immersive-lock-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    background: rgba(168, 85, 247, 0.1);
+    border: 1px solid rgba(168, 85, 247, 0.3);
+    border-radius: var(--radius-sm);
+    font-size: 11px;
+    color: var(--neon-purple);
+}
+
+.immersive-tts-toggle {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.immersive-settings-divider {
+    height: 1px;
+    background: var(--border-subtle);
+    margin: 8px 0;
+}
+
+/* Settings Toggle Button */
+.immersive-settings-toggle {
+    position: fixed;
+    bottom: 32px;
+    right: 32px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: 1px solid var(--border-subtle);
+    background: var(--bg-panel);
+    backdrop-filter: blur(16px);
+    color: var(--text-secondary);
+    font-size: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 70;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow-panel);
+}
+
+.immersive-settings-toggle.visible {
+    display: flex;
+}
+
+.immersive-settings-toggle:hover {
+    color: var(--neon-blue);
+    border-color: var(--border-glow);
+    box-shadow: var(--shadow-glow-md);
+}
+
+.immersive-settings-toggle:hover i {
+    animation: settingsRotate 0.5s ease;
+}
+
+@keyframes settingsRotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(90deg); }
+}
+
+/* ==================== Mode-specific Body Classes ==================== */
+body.standard-mode .immersive-stage,
+body.standard-mode .immersive-settings-panel,
+body.standard-mode .immersive-settings-toggle {
+    display: none !important;
+}
+
+body.immersive-mode .command-body {
+    /* 使用 visibility 而不是 display:none，让子元素仍可独立控制可见性 */
+    visibility: hidden;
+    pointer-events: none;
+    position: absolute;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+}
+
+/* 沉浸式模式下的面板显示（独立于command-body） */
+body.immersive-mode .ide-panel {
+    visibility: visible;
+    pointer-events: auto;
+    position: fixed;
+    top: var(--bar-height);
+    right: 0;
+    bottom: 0;
+    width: var(--ide-width);
+    z-index: 100;
+}
+
+body.immersive-mode .side-drawer {
+    visibility: visible;
+    pointer-events: auto;
+    position: fixed;
+    top: var(--bar-height);
+    right: 0;
+    bottom: 0;
+    width: var(--drawer-width);
+    z-index: 100;
+}
+
+body.immersive-mode .immersive-stage {
+    display: flex;
+}
+
+body.immersive-mode .immersive-settings-toggle {
+    display: flex;
+}
+
+body.immersive-mode .command-bar-center {
+    display: none;
+}
+
+body.immersive-mode .command-bar-left .sidebar-toggle-btn {
+    display: none;
+}
+
+/* Responsive for immersive mode */
+@media (max-width: 600px) {
+    .immersive-mic-btn {
+        width: 140px;
+        height: 140px;
+        font-size: 44px;
+    }
+    
+    .immersive-ring {
+        inset: -10px;
+    }
+    
+    .immersive-ring-2 {
+        inset: -20px;
+    }
+    
+    .immersive-ring-3 {
+        inset: -30px;
+    }
+    
+    .immersive-settings-panel {
+        width: 100%;
+    }
+    
+    .immersive-settings-toggle {
+        bottom: 20px;
+        right: 20px;
+        width: 48px;
+        height: 48px;
+        font-size: 18px;
+    }
+    
+    .immersive-status {
+        font-size: 16px;
     }
 }

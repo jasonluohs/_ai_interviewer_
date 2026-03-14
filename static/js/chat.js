@@ -75,7 +75,84 @@ class ChatModule {
                     this.codeEditor.refresh();
                 }, 350);
             }
+            // 提取并显示题目
+            this.extractAndShowProblem();
             console.log('💻 IDE面板已显示');
+        }
+    }
+
+    // 提取并显示题目
+    extractAndShowProblem() {
+        // 从对话历史中查找最近的AI回复（包含题目的消息）
+        const lastAssistantMsg = this.findLastProblemMessage();
+        if (lastAssistantMsg) {
+            this.updateProblemContent(lastAssistantMsg);
+        }
+    }
+
+    // 查找最近的包含题目的AI消息
+    findLastProblemMessage() {
+        // 从后往前查找最近的assistant消息
+        for (let i = this.history.length - 1; i >= 0; i--) {
+            const msg = this.history[i];
+            if (msg.role === 'assistant') {
+                // 返回最近的AI回复作为题目
+                return msg.content;
+            }
+        }
+        return null;
+    }
+
+    // 更新题目内容
+    updateProblemContent(content) {
+        const problemContent = document.getElementById('ide-problem-content');
+        if (!problemContent) return;
+
+        // 清理题目内容，移除一些不需要的内容
+        let cleanedContent = content;
+        
+        // 移除可能的流程指令（如 /next[4] 等）
+        cleanedContent = cleanedContent.replace(/[\/\\]next\[?\(?\s*\d+\s*\]?\)?/gi, '').trim();
+
+        // 使用 Markdown 渲染
+        try {
+            let rendered = '';
+            if (window.mdRenderer && window.mdRenderer.ready) {
+                rendered = window.mdRenderer.render(cleanedContent);
+            } else if (typeof marked !== 'undefined' && typeof marked.parse === 'function') {
+                rendered = marked.parse(cleanedContent);
+            }
+            
+            if (rendered) {
+                problemContent.innerHTML = `<div class="md-body">${rendered}</div>`;
+            } else {
+                problemContent.innerHTML = `<div class="md-body"><p>${this.escapeHtml(cleanedContent)}</p></div>`;
+            }
+        } catch (e) {
+            console.error('[IDE] 题目渲染失败:', e);
+            problemContent.innerHTML = `<div class="md-body"><p>${this.escapeHtml(cleanedContent)}</p></div>`;
+        }
+
+        // 对代码块应用语法高亮
+        if (typeof hljs !== 'undefined') {
+            problemContent.querySelectorAll('pre code').forEach(block => {
+                try { hljs.highlightElement(block); } catch(_) {}
+            });
+        }
+
+        console.log('📝 题目已更新到IDE面板');
+    }
+
+    // 清空题目内容
+    clearProblemContent() {
+        const problemContent = document.getElementById('ide-problem-content');
+        if (problemContent) {
+            problemContent.innerHTML = `
+                <div class="ide-problem-placeholder">
+                    <i class="fas fa-hourglass-half"></i>
+                    <span>等待面试官出题...</span>
+                </div>
+            `;
         }
     }
 
@@ -109,6 +186,8 @@ class ChatModule {
         }
         // Update timeline via app
         window.app?.updatePhaseTimeline(phase);
+        // Update immersive mode phase display
+        window.app?.updateImmersivePhase(phase);
     }
 
     /* ==================== Events ==================== */
@@ -174,6 +253,17 @@ class ChatModule {
             idePanelToggle.addEventListener('change', () => {
                 if (idePanelToggle.checked) this.showIDEPanel();
                 else this.hideIDEPanel();
+            });
+        }
+
+        // 题目区域折叠/展开
+        const problemSection = document.getElementById('ide-problem-section');
+        const problemToggle = document.getElementById('ide-problem-toggle');
+        const problemHeader = document.querySelector('.ide-problem-header');
+        
+        if (problemHeader && problemSection) {
+            problemHeader.addEventListener('click', () => {
+                problemSection.classList.toggle('collapsed');
             });
         }
     }
@@ -420,11 +510,24 @@ class ChatModule {
         if (this.isStreaming) return;
 
         const settings = window.app?.getSettings() || {};
+        const isImmersive = window.app?.isImmersiveMode();
+
         this.history.push({ role: 'user', content: message });
-        this.renderHistory();
+        
+        // 沉浸式模式不渲染聊天历史
+        if (!isImmersive) {
+            this.renderHistory();
+        }
 
         const assistantMsgId = `msg-${Date.now()}`;
-        this.addAssistantPlaceholder(assistantMsgId);
+        
+        // 沉浸式模式不添加占位符
+        if (!isImmersive) {
+            this.addAssistantPlaceholder(assistantMsgId);
+        } else {
+            // 更新沉浸式状态
+            window.app?.updateImmersiveStatus('AI 正在思考...');
+        }
 
         // 精简模式下，新消息开始时重置音频队列
         if (this.compactMode && window.ttsPlayer) {
@@ -456,6 +559,7 @@ class ChatModule {
             const decoder = new TextDecoder();
             let buffer = '';
             let fullResponse = '';
+            let ttsStarted = false;
 
             while (true) {
                 const { done, value } = await reader.read();
@@ -471,7 +575,10 @@ class ChatModule {
                             const data = JSON.parse(line.slice(6));
                             if (data.type === 'text') {
                                 fullResponse = data.content;
-                                this.updateAssistantMessage(assistantMsgId, fullResponse);
+                                // 沉浸式模式不更新文字消息
+                                if (!isImmersive) {
+                                    this.updateAssistantMessage(assistantMsgId, fullResponse);
+                                }
                             } else if (data.type === 'phase') {
                                 if (Number.isInteger(data.phase)) {
                                     this.handlePhaseChange(data.phase);
@@ -479,11 +586,21 @@ class ChatModule {
                             } else if (data.type === 'audio') {
                                 if (settings.enable_tts && window.ttsPlayer) {
                                     window.ttsPlayer.addAudio(data.data, data.sentence);
+                                    // 沉浸式模式显示TTS指示器
+                                    if (isImmersive && !ttsStarted) {
+                                        ttsStarted = true;
+                                        window.app?.showImmersiveTTSIndicator();
+                                        window.app?.updateImmersiveStatus('AI 正在回复...');
+                                    }
                                 }
                             } else if (data.type === 'done') {
                                 fullResponse = data.full_response || fullResponse;
                             } else if (data.type === 'error') {
-                                this.updateAssistantMessage(assistantMsgId, `错误: ${data.message}`);
+                                if (!isImmersive) {
+                                    this.updateAssistantMessage(assistantMsgId, `错误: ${data.message}`);
+                                } else {
+                                    window.app?.updateImmersiveStatus(`错误: ${data.message}`);
+                                }
                             }
                         } catch (e) {
                             console.error('解析 SSE 数据失败:', e, line);
@@ -495,15 +612,43 @@ class ChatModule {
             this.history.push({ role: 'assistant', content: fullResponse });
             this._streamingEl = null;
             this._streamingTarget = null;
-            this.renderHistory();   // 流式结束后重新渲染，确保 Markdown 干净渲染
+            
+            // 沉浸式模式不渲染历史
+            if (!isImmersive) {
+                this.renderHistory();   // 流式结束后重新渲染，确保 Markdown 干净渲染
+            }
             this.updateMsgCount();
+
+            // 沉浸式模式：等待TTS播放完成后更新状态
+            if (isImmersive) {
+                this.waitForTTSComplete();
+            }
 
         } catch (error) {
             console.error('发送消息失败:', error);
-            this.updateAssistantMessage(assistantMsgId, `发送失败: ${error.message}`);
+            if (!isImmersive) {
+                this.updateAssistantMessage(assistantMsgId, `发送失败: ${error.message}`);
+            } else {
+                window.app?.updateImmersiveStatus(`发送失败: ${error.message}`);
+                window.app?.hideImmersiveTTSIndicator();
+            }
         } finally {
             this.isStreaming = false;
         }
+    }
+
+    // 等待TTS播放完成（仅用于沉浸式模式的UI状态更新）
+    // 注意：VAD的恢复由tts-stream.js统一处理
+    waitForTTSComplete() {
+        const checkTTS = () => {
+            if (window.ttsPlayer && window.ttsPlayer.isPlaying) {
+                setTimeout(checkTTS, 500);
+            } else {
+                // 只隐藏TTS指示器，VAD恢复由tts-stream.js处理
+                window.app?.hideImmersiveTTSIndicator();
+            }
+        };
+        setTimeout(checkTTS, 1000);
     }
 
     renderHistory() {
@@ -637,6 +782,8 @@ class ChatModule {
         if (this.msgCountEl) {
             this.msgCountEl.textContent = this.history.length;
         }
+        // 同步更新沉浸式模式的消息计数
+        window.app?.updateImmersiveMsgCount();
     }
 
     async clearHistory() {
@@ -647,7 +794,11 @@ class ChatModule {
             this.renderHistory();
             this.updateMsgCount();
             this.hideIDEPanel();
+            this.clearProblemContent();  // 清空题目
             if (window.ttsPlayer) window.ttsPlayer.reset();
+            // 沉浸式模式重置
+            window.app?.updateImmersivePhase(0);
+            window.app?.hideImmersiveTTSIndicator();
         } catch (error) {
             console.error('清空历史失败:', error);
         }

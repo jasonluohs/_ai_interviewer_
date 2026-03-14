@@ -35,10 +35,15 @@ class VADDetector {
         this.hasSpoken = false;
         this.noSpeechTimeoutId = null;  // 超时计时器 ID
 
+        // 标准模式麦克风按钮
         this.recordBtn = document.getElementById('record-btn');
         this.recordIconEl = document.getElementById('record-icon-i');
         this.statusIndicator = document.getElementById('vad-status-indicator');
         this.statusText = this.statusIndicator?.querySelector('.vad-status-text');
+
+        // 沉浸式模式麦克风按钮
+        this.immersiveRecordBtn = document.getElementById('immersive-record-btn');
+        this.immersiveRecordIcon = document.getElementById('immersive-record-icon');
 
         this.onSpeechStart = null;
         this.onSpeechEnd = null;
@@ -48,8 +53,13 @@ class VADDetector {
     }
 
     bindEvents() {
+        // 标准模式麦克风
         if (this.recordBtn) {
             this.recordBtn.addEventListener('click', () => this.toggle());
+        }
+        // 沉浸式模式麦克风
+        if (this.immersiveRecordBtn) {
+            this.immersiveRecordBtn.addEventListener('click', () => this.toggle());
         }
     }
 
@@ -317,6 +327,7 @@ class VADDetector {
     }
 
     updateStatus(state, text) {
+        // 更新标准模式UI
         if (this.statusIndicator) {
             this.statusIndicator.className = 'vad-status-badge';
             if (state) {
@@ -335,6 +346,8 @@ class VADDetector {
                 this.recordBtn.classList.add('speaking');
             } else if (state === 'processing') {
                 this.recordBtn.classList.add('processing');
+            } else if (state === 'tts-playing') {
+                this.recordBtn.classList.add('tts-playing');
             }
         }
 
@@ -343,11 +356,46 @@ class VADDetector {
                 this.recordIconEl.className = 'fas fa-microphone';
             } else if (state === 'processing') {
                 this.recordIconEl.className = 'fas fa-spinner fa-spin';
+            } else if (state === 'tts-playing') {
+                this.recordIconEl.className = 'fas fa-volume-up';
             } else if (state === 'listening') {
                 this.recordIconEl.className = 'fas fa-microphone';
             } else {
                 this.recordIconEl.className = 'fas fa-microphone';
             }
+        }
+
+        // 更新沉浸式模式UI
+        if (this.immersiveRecordBtn) {
+            this.immersiveRecordBtn.classList.remove('listening', 'speaking', 'processing', 'tts-playing');
+            if (state === 'listening') {
+                this.immersiveRecordBtn.classList.add('listening');
+            } else if (state === 'speaking') {
+                this.immersiveRecordBtn.classList.add('speaking');
+            } else if (state === 'processing') {
+                this.immersiveRecordBtn.classList.add('processing');
+            } else if (state === 'tts-playing') {
+                this.immersiveRecordBtn.classList.add('tts-playing');
+            }
+        }
+
+        if (this.immersiveRecordIcon) {
+            if (state === 'speaking') {
+                this.immersiveRecordIcon.className = 'fas fa-microphone';
+            } else if (state === 'processing') {
+                this.immersiveRecordIcon.className = 'fas fa-spinner fa-spin';
+            } else if (state === 'tts-playing') {
+                this.immersiveRecordIcon.className = 'fas fa-volume-up';
+            } else if (state === 'listening') {
+                this.immersiveRecordIcon.className = 'fas fa-microphone';
+            } else {
+                this.immersiveRecordIcon.className = 'fas fa-microphone';
+            }
+        }
+
+        // 更新沉浸式模式状态文字
+        if (window.app?.isImmersiveMode()) {
+            window.app.updateImmersiveStatus(text);
         }
     }
 
