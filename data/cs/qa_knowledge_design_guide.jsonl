@@ -1,0 +1,5 @@
+﻿{"question":"高质量面试知识库统一格式规范。","answer":"统一字段：question, answer, topic, difficulty, type。difficulty 仅允许 easy/medium/hard；type 建议 coding/theory/design/behavior/knowledge/rubric/followup-template。","topic":"knowledge-guide","difficulty":"easy","type":"spec"}
+{"question":"低质量条目判定标准。","answer":"任一命中即删除：定义性废话、无法追问、无可验证标准、与其他条目高度重复、与岗位能力无关。","topic":"knowledge-guide","difficulty":"medium","type":"spec"}
+{"question":"去重策略（语义去重而非文本去重）。","answer":"同一考点只保留信息密度最高+可追问最强版本，其余合并为追问补充，避免召回稀释。","topic":"knowledge-guide","difficulty":"medium","type":"knowledge"}
+{"question":"大厂面试知识库应覆盖哪些非题目资料？","answer":"至少包含：评分 rubric、追问模板、故障排查 playbook、系统设计容量估算模板、行为面 STAR 评分卡。","topic":"knowledge-guide","difficulty":"medium","type":"knowledge"}
+{"question":"知识库迭代闭环。","answer":"每轮面试后记录：命中条目、追问深度、评分分布、失败案例；每周清理低命中和低质量条目。","topic":"knowledge-guide","difficulty":"hard","type":"playbook"}

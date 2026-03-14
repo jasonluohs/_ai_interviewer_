@@ -1,0 +1,5 @@
+﻿{"question":"候选人只报结论不讲推理时的高压追问模板。","answer":"模板：结论无效。请按定义-方法-不变量-复杂度-反例在 30 秒内重答。缺任何一项视为未回答。","topic":"pressure-followup","difficulty":"hard","type":"followup-template"}
+{"question":"复杂度模糊回答时如何追问到可验证？","answer":"要求逐层拆解循环次数、数据结构操作代价、最好/平均/最坏复杂度，并说明输入分布影响。","topic":"pressure-followup","difficulty":"hard","type":"followup-template"}
+{"question":"代码通过样例但疑似边界错时的模板。","answer":"要求候选人立即给 3 类反例：空输入、极端规模、重复/负值；并手推预期输出与修复点。","topic":"pressure-followup","difficulty":"hard","type":"followup-template"}
+{"question":"系统设计里无数字设计的纠偏模板。","answer":"没有 QPS/数据量/峰值假设，不接受架构结论。要求先补容量假设，再谈组件和扩展。","topic":"pressure-followup","difficulty":"hard","type":"followup-template"}
+{"question":"压力面结束评分模板。","answer":"按正确性40、复杂度20、边界20、工程化10、抗压表达10 给分，并必须给 3 个具体扣分依据。","topic":"pressure-followup","difficulty":"hard","type":"rubric"}

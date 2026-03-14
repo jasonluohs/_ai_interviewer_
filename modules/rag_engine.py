@@ -3,6 +3,16 @@ import os
 os.environ["ANONYMIZED_TELEMETRY"] = "False"
 os.environ["CHROMA_TELEMETRY"] = "False"
 
+# 修复部分 Windows 网络环境（VPN/代理）下 dashscope.aliyuncs.com SSL 证书验证失败问题
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+import requests as _requests
+_orig_session_send = _requests.Session.send
+def _patched_session_send(self, request, **kwargs):
+    kwargs.setdefault('verify', False)
+    return _orig_session_send(self, request, **kwargs)
+_requests.Session.send = _patched_session_send
+
 from typing import Dict, List, Optional
 from langchain_community.embeddings import DashScopeEmbeddings
 from langchain_chroma import Chroma

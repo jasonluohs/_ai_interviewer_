@@ -1,0 +1,15 @@
+{"question":"为什么高并发系统要同时关注吞吐和尾延迟？","answer":"高吞吐不代表体验好，尾延迟决定最差用户感受。排队与重试会放大P99，必须联合优化。","topic":"network","difficulty":"medium","type":"knowledge"}
+{"question":"L4 与 L7 负载均衡如何取舍？","answer":"L4性能高开销小，L7可按业务特征路由更灵活。取舍点在性能、可观测性、策略复杂度。","topic":"network","difficulty":"medium","type":"tradeoff"}
+{"question":"DNS 设计中 TTL 的权衡。","answer":"TTL长命中高但切换慢，TTL短灵活但查询成本高。故障切流和蓝绿发布时要提前规划TTL策略。","topic":"network","difficulty":"medium","type":"theory"}
+{"question":"CDN 命中率优化的系统化方法。","answer":"优化缓存键、分层TTL、预热热点、版本化资源、回源保护。必须测业务关键路径而非全站平均命中率。","topic":"network","difficulty":"hard","type":"playbook"}
+{"question":"TCP 为什么会有 TIME_WAIT，能直接关掉吗？","answer":"用于确保旧包不污染新连接并保证可靠关闭。随意关闭会引入隐蔽连接问题；应通过端口复用和连接池治理。","topic":"network","difficulty":"hard","type":"theory"}
+{"question":"QUIC 相比 TCP+TLS 的实际收益。","answer":"更快握手、连接迁移、流级别避免队头阻塞。要同时说明0-RTT重放风险和中间设备兼容问题。","topic":"network","difficulty":"hard","type":"theory"}
+{"question":"如何定位跨地域网络抖动问题？","answer":"从端到端路径拆分：客户端->边缘->骨干->机房，结合RTT、丢包、重传、BGP变更事件做时间线关联。","topic":"network","difficulty":"hard","type":"troubleshooting"}
+{"question":"为什么重试与超时配置是网络稳定性核心？","answer":"错误配置会产生重试风暴放大故障。应设置重试预算、指数退避、熔断保护和幂等限制。","topic":"network","difficulty":"hard","type":"reliability"}
+{"question":"服务发现系统最容易失败在哪里？","answer":"健康检查误判、注册信息陈旧、控制面单点。需心跳退避、缓存降级、多副本一致性和观测报警。","topic":"network","difficulty":"medium","type":"architecture"}
+{"question":"零信任网络在技术面如何答得专业？","answer":"强调持续身份验证、最小权限、设备态感知、细粒度策略与全链路审计，不只说“全量加密”。","topic":"network","difficulty":"medium","type":"knowledge"}
+{"question":"网络容量规划应包含哪些参数？","answer":"峰值带宽、连接数、报文大小分布、突发系数、跨区流量占比、冗余链路预算。容量估算必须与故障场景联动。","topic":"network","difficulty":"hard","type":"playbook"}
+{"question":"何为级联失败，如何在网络层阻断？","answer":"上游慢导致下游排队并触发超时重试，形成放大回路。阻断手段：限流、隔离舱壁、降级、快速失败。","topic":"network","difficulty":"hard","type":"knowledge"}
+{"question":"网络面试中的高价值案例题。","answer":"跨机房故障切流、CDN回源雪崩、网关502/504、DNS污染应急。候选人要给证据链和处置优先级。","topic":"network","difficulty":"medium","type":"design-case"}
+{"question":"如何评估网络方案是否“可运营”？","answer":"看可观测性（指标/日志/trace）、变更可控性、故障演练、自动化回滚能力。只讲协议不讲运维不可落地。","topic":"network","difficulty":"medium","type":"rubric"}
+{"question":"网络可靠性评分模板。","answer":"原理理解25、故障定位25、架构取舍25、稳定性机制15、沟通10。适合面试后结构化反馈。","topic":"network","difficulty":"medium","type":"rubric"}

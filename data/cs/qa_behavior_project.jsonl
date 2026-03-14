@@ -1,0 +1,6 @@
+﻿{"question":"讲一个你主导的项目，如何证明不是参与者叙事？","answer":"要求候选人给：目标、个人决策、关键取舍、量化结果、失败教训。缺一项即视为 ownership 不足。","topic":"behavior-project","difficulty":"medium","type":"behavior"}
+{"question":"与产品目标冲突时如何推进？","answer":"先对齐业务目标和约束，再给数据化方案比较，最后明确决策机制与风险承担。","topic":"behavior-project","difficulty":"medium","type":"behavior"}
+{"question":"一次线上事故中你扮演了什么角色？","answer":"优秀回答应包含止血、沟通、定位、修复、复盘改进全链路，而不仅是我修了个 bug。","topic":"behavior-project","difficulty":"medium","type":"behavior"}
+{"question":"如何识别候选人项目真实性？","answer":"深挖：容量指标口径、上线流程、失败案例、跨团队协作细节。泛泛回答通常说明参与深度不足。","topic":"behavior-project","difficulty":"hard","type":"knowledge"}
+{"question":"BQ 面试评分卡（STAR 增强版）。","answer":"维度：情境清晰20、任务边界15、行动深度30、结果量化20、复盘反思15。可用于报告自动评分。","topic":"behavior-project","difficulty":"medium","type":"rubric"}
+{"question":"如何在面试中回答项目难点并量化收益？","answer":"建议用 STAR+M：Situation 交代背景，Task 说明目标与约束，Action 细化个人关键动作，Result 给量化结果（延迟下降、成本节省、转化提升），Metric 说明口径与对照组。高质量回答要明确‘你做了什么’而非‘团队做了什么’。","topic":"behavior-project","difficulty":"medium","type":"behavior"}

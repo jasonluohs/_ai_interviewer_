@@ -1,0 +1,15 @@
+{"question":"设计秒杀系统时，先讲哪三件事？","answer":"先讲目标指标（峰值QPS/成功率/延迟），再讲保护策略（限流/排队/降级），最后讲一致性（防超卖/幂等/补偿）。缺任一项都不算完整答案。","topic":"system-design","difficulty":"hard","type":"design-case"}
+{"question":"设计聊天系统，消息顺序如何保证？","answer":"同会话路由到同分区或同序列器；客户端需处理乱序重排和去重。跨设备同步要定义最终一致策略与冲突解决规则。","topic":"system-design","difficulty":"medium","type":"design-case"}
+{"question":"设计搜索建议（autocomplete）服务。","answer":"核心链路：召回（前缀/纠错）+排序（热度/个性化）+缓存。必须讲更新延迟、脏词过滤、低延迟目标（如P99<50ms）。","topic":"system-design","difficulty":"hard","type":"design-case"}
+{"question":"设计实时风控系统如何平衡误杀与漏放？","answer":"规则+模型双轨，给出分级处置（拦截/二次验证/放行）。要设计离线回放评估与在线A/B，持续校准阈值。","topic":"system-design","difficulty":"hard","type":"design-case"}
+{"question":"设计日志平台，最容易被忽略的点是什么？","answer":"高基数标签导致存储和查询爆炸。应提前定义日志字段规范、采样策略、冷热分层和保留周期。","topic":"system-design","difficulty":"medium","type":"design-case"}
+{"question":"设计多租户SaaS的隔离策略。","answer":"隔离层级可选库级/表级/行级+应用层鉴权。要讨论噪声邻居、配额限流、审计追踪、跨租户运维工具。","topic":"system-design","difficulty":"hard","type":"design-case"}
+{"question":"设计推荐系统面试回答骨架。","answer":"召回->粗排->精排->重排->反馈闭环。必须给特征服务、模型更新频率、延迟预算、在线回退策略。","topic":"system-design","difficulty":"hard","type":"playbook"}
+{"question":"设计文件上传服务的关键路径。","answer":"分片上传、断点续传、秒传（内容哈希）、合并校验、异步病毒扫描。必须讨论大文件失败重试与临时分片清理。","topic":"system-design","difficulty":"medium","type":"design-case"}
+{"question":"设计全球化多地域部署时优先级是什么？","answer":"优先明确一致性等级和故障域。然后给流量调度、数据复制、冲突处理和灾备演练计划。","topic":"system-design","difficulty":"hard","type":"design-case"}
+{"question":"设计支付系统，为什么状态机是核心？","answer":"支付回调可能重复、乱序、延迟。状态机可约束合法迁移并支撑幂等，配合对账与补偿保证最终一致。","topic":"system-design","difficulty":"hard","type":"design-case"}
+{"question":"设计缓存架构时如何避免‘命中率幻觉’？","answer":"命中率要分业务关键路径统计，不能只看全局平均。需结合回源延迟、热点命中、错误率和成本做综合评估。","topic":"system-design","difficulty":"medium","type":"knowledge"}
+{"question":"系统设计面试里“容量估算”最低要求。","answer":"至少给QPS、数据规模、读写比、峰谷比、增长率，并把这些数字映射到组件瓶颈。无数字的设计通常被判低分。","topic":"system-design","difficulty":"medium","type":"rubric"}
+{"question":"设计推送系统如何保证到达率？","answer":"多通道冗余、重试退避、去重ID、回执链路、黑名单管理。还要考虑静默时段和用户偏好，避免骚扰导致退订。","topic":"system-design","difficulty":"medium","type":"design-case"}
+{"question":"设计库存预占方案的陷阱。","answer":"预占超时未释放、并发扣减竞态、取消订单回补延迟。需要补偿任务和死信处理，且全链路幂等。","topic":"system-design","difficulty":"hard","type":"mistake"}
+{"question":"系统设计面试高分表达技巧。","answer":"先澄清需求再分层画图，边画边报风险和取舍；每个组件都回答“为什么是它、坏了怎么办、怎么扩容”。","topic":"system-design","difficulty":"easy","type":"interview-skill"}

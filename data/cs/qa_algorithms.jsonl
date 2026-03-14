@@ -1,0 +1,10 @@
+﻿{"question":"两数之和（数组无序）你会如何设计最优解？","answer":"考点：哈希表换时间。标准回答应先给 O(n^2) 基线，再给 O(n) 解：遍历时检查 target-num 是否已出现。必须说明重复元素处理、返回索引顺序、空间复杂度 O(n)。追问：当要求返回所有不重复解对时如何去重？","topic":"algorithms","difficulty":"easy","type":"coding"}
+{"question":"给定数组与 K，统计和为 K 的子数组个数。","answer":"考点：前缀和+哈希计数。正确做法：维护 prefix_sum 及其出现次数，答案累加 cnt[prefix_sum-K]。关键点：初始化 cnt[0]=1；可含负数，因此双指针不适用。测试：nums=[1,-1,0],k=0 结果为 3。","topic":"algorithms","difficulty":"medium","type":"coding"}
+{"question":"最长无重复子串如何做到线性时间？","answer":"考点：滑动窗口不回退。记录字符最后位置，left=max(left,last[c]+1)。要求候选人解释为何总复杂度 O(n)（每个指针只前进）。常见错误：left 直接跳回导致重复计数。","topic":"algorithms","difficulty":"medium","type":"coding"}
+{"question":"合并 K 个有序链表的最优工程解是什么？","answer":"考点：最小堆与分治对比。推荐小顶堆 O(N log K)；也可分治两两合并 O(N log K)。追问：K 很大但每条链很短时常数项如何影响选择。","topic":"algorithms","difficulty":"medium","type":"coding"}
+{"question":"最小覆盖子串（Minimum Window Substring）如何构造？","answer":"考点：窗口计数平衡。维护 need/window 与 valid 计数，右扩满足后左缩最短。必须说明重复字符需求（如 AABC）处理方式。常见错误：每次重扫窗口导致 O(n^2)。","topic":"algorithms","difficulty":"hard","type":"coding"}
+{"question":"接雨水问题请给出 O(n) 解法并说明正确性。","answer":"考点：双指针/单调栈。双指针法核心不变量：较低侧决定当前可接水量。要求说明为何可以局部决策为全局正确。必须给出边界：空数组、单调数组、全相等。","topic":"algorithms","difficulty":"hard","type":"coding"}
+{"question":"课程表（有向图判环）你会如何实现？","answer":"考点：拓扑排序或 DFS 三色标记。Kahn 法看是否能弹出全部节点。追问：如何返回一种可行顺序？如何处理百万级图的内存压力？","topic":"algorithms","difficulty":"medium","type":"coding"}
+{"question":"Dijkstra 什么时候不能用？","answer":"考点：适用条件。仅适用于非负权图；存在负边应改用 Bellman-Ford/SPFA。要求候选人给负边反例，证明 Dijkstra 失效。","topic":"algorithms","difficulty":"hard","type":"theory"}
+{"question":"编辑距离（Levenshtein）如何定义状态与转移？","answer":"考点：二维 DP。dp[i][j] 表示前缀距离，转移为插入/删除/替换最小值+1。追问：空间优化到 O(min(m,n)) 的写法。","topic":"algorithms","difficulty":"hard","type":"coding"}
+{"question":"面试中如何证明算法不是拍脑袋？","answer":"回答模板：1) 先给不变量或归纳假设；2) 给终止性；3) 给复杂度来源；4) 给反例验证未击穿。用于训练模型做可验证解释。","topic":"algorithms","difficulty":"medium","type":"knowledge"}

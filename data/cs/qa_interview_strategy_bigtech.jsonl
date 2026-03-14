@@ -1,0 +1,15 @@
+{"question":"大厂技术面第一轮最看重什么？","answer":"不是“答出多少题”，而是问题拆解能力、可验证推理、沟通结构和代码鲁棒性。面试官通过这些判断你在复杂问题中的稳定性。","topic":"interview-strategy","difficulty":"easy","type":"knowledge"}
+{"question":"代码面试答题节奏模板。","answer":"澄清->思路->复杂度->编码->自测->优化。任何一步跳过都可能被追问打穿，尤其是澄清和自测。","topic":"interview-strategy","difficulty":"easy","type":"playbook"}
+{"question":"如何在写代码前降低返工概率？","answer":"先口头对齐函数签名、输入约束、异常行为、返回约定，再开始编码。面试中提前 60 秒澄清常能省下 10 分钟返工。","topic":"interview-strategy","difficulty":"medium","type":"skill"}
+{"question":"系统设计面如何避免‘空中楼阁式回答’？","answer":"必须把每个设计选择绑定到指标和约束：为何选、成本是什么、极端情况怎么办。只讲组件名词堆砌会被判浅。","topic":"interview-strategy","difficulty":"medium","type":"skill"}
+{"question":"压力面下如何保持表达清晰？","answer":"使用固定框架：结论一句话+三点依据+下一步动作。不要长段无结构叙述，压力下越要模板化表达。","topic":"interview-strategy","difficulty":"hard","type":"skill"}
+{"question":"当你不会某题时，高分应对方式。","answer":"先给可行基线解并明确瓶颈，再提出优化方向和风险，最后请求1个提示继续推进。比沉默或硬猜更能展示可培养性。","topic":"interview-strategy","difficulty":"medium","type":"skill"}
+{"question":"行为面（BQ）如何避免‘流水账’？","answer":"用 STAR+复盘：情境、任务、行动、结果、反思。结果必须量化，不量化很难体现影响力。","topic":"interview-strategy","difficulty":"easy","type":"playbook"}
+{"question":"项目深挖常见追问维度。","answer":"目标与约束、核心决策、关键故障、指标变化、取舍理由、个人贡献边界。准备不足会在“反例和失败经验”处暴露。","topic":"interview-strategy","difficulty":"medium","type":"knowledge"}
+{"question":"如何准备‘复杂度追问链’？","answer":"对每道高频题准备：时间/空间上界、退化场景、输入分布影响、可替代方案。只会一个Big-O通常不够。","topic":"interview-strategy","difficulty":"medium","type":"playbook"}
+{"question":"面试中的测试意识如何展示？","answer":"每段关键逻辑后主动给边界样例和预期输出，体现工程习惯。候选人主动测试通常显著提升‘可上线信任度’。","topic":"interview-strategy","difficulty":"easy","type":"skill"}
+{"question":"如何回答“为什么选择这个方案”？","answer":"用 trade-off 表达：性能、复杂度、可维护性、一致性、成本。没有取舍就没有设计。","topic":"interview-strategy","difficulty":"medium","type":"skill"}
+{"question":"面试中常见低分信号。","answer":"不澄清就写、复杂度说不清、边界不测、把相关性当因果、无法解释自己代码。任一反复出现都会触发降级判断。","topic":"interview-strategy","difficulty":"easy","type":"rubric"}
+{"question":"高分候选人的共性。","answer":"结构化表达、假设透明、能自我纠错、代码风格稳定、遇压不乱且愿意验证。面试官更看“可持续产出能力”而非偶然灵感。","topic":"interview-strategy","difficulty":"medium","type":"knowledge"}
+{"question":"准备大厂面试的四周冲刺法。","answer":"第1周补基础与模板；第2周专项刷题与复盘；第3周模拟面与系统设计；第4周错题回炉+行为面故事打磨。每周至少一次全真计时。","topic":"interview-strategy","difficulty":"medium","type":"playbook"}
+{"question":"如何构建个人面试复盘库？","answer":"每场记录：题目、卡点、追问、错误类型、改进动作。按错误标签统计趋势，比盲目加题更快提升。","topic":"interview-strategy","difficulty":"easy","type":"playbook"}

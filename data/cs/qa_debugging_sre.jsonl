@@ -1,0 +1,6 @@
+﻿{"question":"线上 p99 延迟暴涨时，5 分钟止血策略是什么？","answer":"限流降级、快速回滚、隔离慢依赖、扩容关键实例。必须先控影响面，再做根因定位。","topic":"debugging-sre","difficulty":"hard","type":"troubleshooting"}
+{"question":"CPU 高但流量平稳，优先查什么？","answer":"火焰图热点、锁竞争、自旋重试、GC 频率、异常风暴。要说明证据而非猜测。","topic":"debugging-sre","difficulty":"medium","type":"troubleshooting"}
+{"question":"内存泄漏定位为什么要做两次堆快照对比？","answer":"单次快照只能看当前存量，无法看增长趋势；对比才能识别异常增长对象族。","topic":"debugging-sre","difficulty":"hard","type":"knowledge"}
+{"question":"灰度发布后错误率升高，继续还是回滚？","answer":"看是否超过预设错误预算与观察窗口；超阈值立即回滚，避免再观察一下导致扩大事故。","topic":"debugging-sre","difficulty":"medium","type":"troubleshooting"}
+{"question":"如何评估一个复盘是否高质量？","answer":"必须包含时间线、触发条件、根因、影响范围、行动项 owner+截止时间+验收标准。","topic":"debugging-sre","difficulty":"easy","type":"rubric"}
+{"question":"SRE 面试评分标准。","answer":"维度：定位方法35、止血能力25、系统认知20、复盘闭环10、沟通协同10。","topic":"debugging-sre","difficulty":"medium","type":"rubric"}

@@ -1,0 +1,15 @@
+{"question":"如何回答“你如何推动跨团队项目落地”？","answer":"给出目标对齐、里程碑、风险台账、升级机制、结果复盘五步。重点是你如何处理依赖延期和冲突优先级。","topic":"behavior-project","difficulty":"medium","type":"behavior"}
+{"question":"当你做错技术决策时，怎样回答更有说服力？","answer":"承认错误->解释当时约束->给修复动作->给机制改进。避免把错误归因于他人或“运气不好”。","topic":"behavior-project","difficulty":"medium","type":"behavior"}
+{"question":"如何展示 owner 意识而不是执行者意识？","answer":"强调你定义问题、推进资源、承担结果、沉淀机制。只讲“我实现了某模块”通常不足以体现 owner。","topic":"behavior-project","difficulty":"medium","type":"knowledge"}
+{"question":"面试官问“团队冲突如何处理”时的高分结构。","answer":"先讲冲突事实与目标差异，再讲你如何建立共同决策标准，最后给结果与长期改进机制。","topic":"behavior-project","difficulty":"medium","type":"playbook"}
+{"question":"如何回答“你做过最有影响力的事”？","answer":"必须量化影响：收入、成本、延迟、可用性、研发效率等至少一项。没有量化通常被视作影响力不明确。","topic":"behavior-project","difficulty":"easy","type":"behavior"}
+{"question":"如何准备“失败案例”避免翻车？","answer":"选真实案例，重点讲你如何发现盲点并改进系统。面试官要看可成长性，不是要完美履历。","topic":"behavior-project","difficulty":"medium","type":"skill"}
+{"question":"领导力面试中“向上管理”怎么讲？","answer":"讲清信息不对称如何被你主动消除：状态透明、风险前置、备选方案、决策时点。","topic":"behavior-project","difficulty":"hard","type":"behavior"}
+{"question":"如何证明你有“技术判断力”？","answer":"展示你在不确定条件下做 trade-off 的能力：短期交付与长期债务、性能与复杂度、一致性与可用性。","topic":"behavior-project","difficulty":"hard","type":"knowledge"}
+{"question":"绩效压力下如何保证团队稳定交付？","answer":"拆目标、保关键路径、设告警阈值、控制在制品、及时复盘。强调机制建设而非个人英雄主义。","topic":"behavior-project","difficulty":"hard","type":"behavior"}
+{"question":"如何回答“你如何培养新人”？","answer":"用可复制机制回答：学习路径、代码评审标准、值班陪跑、反馈节奏、阶段验收。","topic":"behavior-project","difficulty":"easy","type":"behavior"}
+{"question":"大厂行为面的常见扣分点。","answer":"空泛口号、归功自己甩锅他人、结果不可量化、没有反思、无法说明你的独立贡献。","topic":"behavior-project","difficulty":"easy","type":"rubric"}
+{"question":"高压质疑时如何保持专业形象？","answer":"先复述问题确认理解，再用事实与数据回应；承认未知并提出验证计划，避免情绪化防御。","topic":"behavior-project","difficulty":"medium","type":"skill"}
+{"question":"如何讲述一次影响全局的技术推动？","answer":"背景复杂性->关键阻力->你的杠杆动作->可量化结果->组织层面的长期收益。","topic":"behavior-project","difficulty":"hard","type":"behavior"}
+{"question":"行为面评分卡（领导力导向）。","answer":"目标导向20、推动力20、协作影响20、结果量化20、复盘成长20。用于报告自动化评分。","topic":"behavior-project","difficulty":"medium","type":"rubric"}
+{"question":"行为故事库如何构建最省时？","answer":"准备10个高复用故事，映射常见维度（冲突、失败、领导力、创新、压力、成长），每个故事保留数字化结果。","topic":"behavior-project","difficulty":"easy","type":"playbook"}

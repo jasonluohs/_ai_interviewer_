@@ -1,0 +1,15 @@
+{"question":"API 网关设计中最关键的三项能力。","answer":"鉴权与权限、流量治理（限流/熔断/重试）、可观测性（日志/指标/trace）。缺一项都难以支撑大规模生产流量。","topic":"backend","difficulty":"medium","type":"architecture"}
+{"question":"如何设计可靠的幂等写接口？","answer":"请求幂等键+去重存储+状态机。要处理超时重试、重复回调、并发提交，确保结果唯一且可重入。","topic":"backend","difficulty":"hard","type":"architecture"}
+{"question":"重试为什么会引发雪崩？如何防？","answer":"失败时全链路同时重试导致放大流量。防护：指数退避+jitter、重试预算、熔断、失败快速返回、幂等约束。","topic":"backend","difficulty":"hard","type":"reliability"}
+{"question":"服务间调用超时如何设定？","answer":"按端到端SLO拆预算：网关、业务逻辑、下游依赖逐层分配。上游超时必须大于下游，否则会出现无效等待和资源浪费。","topic":"backend","difficulty":"medium","type":"architecture"}
+{"question":"消息驱动架构里如何处理乱序消息？","answer":"按业务键分区保证局部有序，消费侧做版本检查或序列号丢弃旧消息。必要时引入重排缓冲和超时策略。","topic":"backend","difficulty":"hard","type":"architecture"}
+{"question":"如何构建高可用任务调度系统？","answer":"任务去重ID、幂等执行、分片调度、心跳与抢占、失败重试与死信。要讲暂停恢复和灾备迁移方案。","topic":"backend","difficulty":"hard","type":"design-case"}
+{"question":"读写分离场景下的一致性读策略。","answer":"关键读走主库、会话粘滞、延迟探针路由。要求按业务强一致/最终一致分层，不做一刀切。","topic":"backend","difficulty":"medium","type":"tradeoff"}
+{"question":"如何设计高吞吐日志采集链路？","answer":"本地缓冲+批量发送+背压控制+降采样。必须处理落盘兜底和网络中断，避免日志反压拖垮业务线程。","topic":"backend","difficulty":"hard","type":"architecture"}
+{"question":"从单体拆微服务的常见失败原因。","answer":"边界划分按组织而非业务、缺乏平台能力、可观测性不足、跨服务事务失控。拆分前需先补治理底座。","topic":"backend","difficulty":"hard","type":"knowledge"}
+{"question":"如何评估一个后端方案是否可上线？","answer":"检查清单：正确性、容量、故障演练、回滚策略、监控告警、权限与审计、压测报告。面试中能给清单即加分。","topic":"backend","difficulty":"medium","type":"rubric"}
+{"question":"为什么要做灰度发布而非全量切换？","answer":"灰度让风险可控、影响可观测、回滚成本低。关键在于分桶稳定性、对照组、回滚自动化。","topic":"backend","difficulty":"easy","type":"knowledge"}
+{"question":"如何避免‘配置变更即事故’？","answer":"配置中心版本化、双人审核、高危项冻结、灰度生效、自动回滚。配置变更也应进入审计与告警流程。","topic":"backend","difficulty":"medium","type":"playbook"}
+{"question":"支付类接口为什么需要签名验真与时效校验？","answer":"防篡改与重放。签名保证完整性，时间戳/nonce 防重放，配合幂等与状态机才完整。","topic":"backend","difficulty":"hard","type":"security"}
+{"question":"后端面试中的‘工程感’如何体现？","answer":"主动讨论日志、告警、降级、限流、压测、回滚，不只给算法答案。工程闭环是大厂关键考察点。","topic":"backend","difficulty":"easy","type":"interview-skill"}
+{"question":"后端系统设计评分模板。","answer":"功能正确25、稳定性25、扩展性20、可观测性15、安全合规10、表达5。适合报告自动生成结构化分数。","topic":"backend","difficulty":"medium","type":"rubric"}

@@ -1,0 +1,6 @@
+﻿{"question":"线程池参数应该如何按任务类型设定？","answer":"CPU 密集型线程数接近核心数，IO 密集型可按阻塞系数放大。必须同时给队列上限与拒绝策略，避免隐性雪崩。","topic":"os-concurrency","difficulty":"medium","type":"theory"}
+{"question":"死锁排查在生产环境的第一步是什么？","answer":"先拿线程 dump/锁等待图确认互等环，再回到代码锁顺序。仅凭日志猜测不算有效排障。","topic":"os-concurrency","difficulty":"medium","type":"knowledge"}
+{"question":"CAS 为什么会有 ABA 问题？如何修复？","answer":"值从 A->B->A 导致 CAS 误判未变化。用版本号（AtomicStampedReference）或 hazard pointer/epoch 回收方案。","topic":"os-concurrency","difficulty":"hard","type":"theory"}
+{"question":"epoll ET 模式为何更难写却更高效？","answer":"ET 只在状态变化通知，减少重复唤醒，但必须一次性读到 EAGAIN。候选人需说明漏读造成的连接假死。","topic":"os-concurrency","difficulty":"hard","type":"theory"}
+{"question":"协程系统里 backpressure 不做会怎样？","answer":"上游无限产出导致队列膨胀、延迟失控、内存飙升。要有限流、队列上限、超时和丢弃策略。","topic":"os-concurrency","difficulty":"hard","type":"knowledge"}
+{"question":"并发面试评分标准。","answer":"评分维度：正确性30、并发安全30、性能与可扩展20、故障意识10、表达10。出现 data race 未识别可直接大幅扣分。","topic":"os-concurrency","difficulty":"medium","type":"rubric"}

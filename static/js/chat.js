@@ -67,6 +67,14 @@ class ChatModule {
         if (this.idePanel && !this.ideVisible) {
             this.idePanel.classList.add('show');
             this.ideVisible = true;
+            this.syncIDEToggle(true);
+            // CodeMirror 在隐藏容器中初始化时无法计算 gutter 宽度，
+            // 面板 CSS transition 结束后必须调用 refresh() 修复行号陷盖代码的问题
+            if (this.codeEditor) {
+                setTimeout(() => {
+                    this.codeEditor.refresh();
+                }, 350);
+            }
             console.log('💻 IDE面板已显示');
         }
     }
@@ -75,6 +83,7 @@ class ChatModule {
         if (this.idePanel && this.ideVisible) {
             this.idePanel.classList.remove('show');
             this.ideVisible = false;
+            this.syncIDEToggle(false);
             console.log('💻 IDE面板已隐藏');
         }
     }
@@ -82,6 +91,15 @@ class ChatModule {
     toggleIDEPanel() {
         if (this.ideVisible) this.hideIDEPanel();
         else this.showIDEPanel();
+    }
+
+    syncIDEToggle(state) {
+        // 同步侧栏 toggle 开关
+        const idePanelToggle = document.getElementById('ide-panel-toggle');
+        if (idePanelToggle) idePanelToggle.checked = state;
+        // 同步顶部命令栏按钮状态
+        const toggleIdeBtn = document.getElementById('toggle-ide-btn');
+        if (toggleIdeBtn) toggleIdeBtn.classList.toggle('active', state);
     }
 
     handlePhaseChange(phase) {
@@ -143,6 +161,21 @@ class ChatModule {
         ioTabs.forEach(tab => {
             tab.addEventListener('click', () => this.switchIOTab(tab.dataset.tab));
         });
+
+        // 顶部命令栏 IDE 按钮
+        const toggleIdeBtn = document.getElementById('toggle-ide-btn');
+        if (toggleIdeBtn) {
+            toggleIdeBtn.addEventListener('click', () => this.toggleIDEPanel());
+        }
+
+        // 侧栏 IDE toggle 开关
+        const idePanelToggle = document.getElementById('ide-panel-toggle');
+        if (idePanelToggle) {
+            idePanelToggle.addEventListener('change', () => {
+                if (idePanelToggle.checked) this.showIDEPanel();
+                else this.hideIDEPanel();
+            });
+        }
     }
     
     /* ==================== CodeMirror 编辑器 ==================== */

@@ -1,0 +1,15 @@
+{"question":"故障响应时第一优先级是什么？","answer":"先止血，再定位。按 SRE 实践，优先让系统在当前条件下尽可能可用，防止级联失败扩大，再做根因分析与复盘。","topic":"debugging-sre","difficulty":"medium","type":"playbook"}
+{"question":"高质量问题报告应包含哪些字段？","answer":"期望行为、实际行为、影响范围、发生时间、复现步骤、证据链接（日志/图表）。报告模板化可显著缩短MTTR。","topic":"debugging-sre","difficulty":"easy","type":"playbook"}
+{"question":"排障中的常见认知陷阱。","answer":"把相关性当因果、沉迷历史故障模板、忽视更高概率解释、测试改变系统状态却未记录。要用假设-验证闭环避免瞎猜。","topic":"debugging-sre","difficulty":"hard","type":"knowledge"}
+{"question":"为什么排障要强调‘可复现实验’？","answer":"可复现是区分猜测与证据的分水岭。没有可复现实验，修复可能只是偶然缓解，难以防复发。","topic":"debugging-sre","difficulty":"medium","type":"theory"}
+{"question":"分布式系统排障的分治策略。","answer":"按链路分层（入口/网关/服务/依赖），或按二分法缩小故障域。每一步都要定义“正常信号”和“异常信号”。","topic":"debugging-sre","difficulty":"medium","type":"playbook"}
+{"question":"变更关联分析为什么是高收益动作？","answer":"系统通常被“最近变更”触发失稳。将错误率和发布/配置变更时间线叠加，常能快速定位故障窗口与嫌疑版本。","topic":"debugging-sre","difficulty":"medium","type":"knowledge"}
+{"question":"事故中做实验要注意什么？","answer":"先评估风险，再按概率高到低测试；记录每次操作与结果；避免多个变量同时改变导致证据污染。","topic":"debugging-sre","difficulty":"hard","type":"playbook"}
+{"question":"为什么要保存‘负结果’？","answer":"负结果能排除错误路径，减少团队重复踩坑。高质量负结果文档是组织学习资产，而不是失败记录。","topic":"debugging-sre","difficulty":"medium","type":"knowledge"}
+{"question":"无责复盘（blameless postmortem）核心原则。","answer":"关注系统与流程，而非指责个人；假设当事人在当时信息下做了合理选择；行动项必须可执行、可验证、可追踪。","topic":"debugging-sre","difficulty":"medium","type":"playbook"}
+{"question":"何时必须写复盘？","answer":"常见触发：用户可见故障超阈值、数据丢失、人工介入重大操作、恢复时间超阈值、监控失效导致晚发现。","topic":"debugging-sre","difficulty":"medium","type":"spec"}
+{"question":"复盘文档最低结构。","answer":"摘要、影响评估、时间线、根因与促因、止血与修复、预防行动项（owner/截止时间/验收标准）、经验教训。","topic":"debugging-sre","difficulty":"easy","type":"template"}
+{"question":"SLO/SLI/错误预算在面试中如何讲？","answer":"SLI是指标、SLO是目标、SLA是带后果的协议。错误预算是允许失误空间，可作为发布节奏和稳定性投入决策信号。","topic":"debugging-sre","difficulty":"medium","type":"knowledge"}
+{"question":"为何建议用分位数而非平均值看延迟？","answer":"平均值会掩盖长尾，P95/P99更贴近用户坏体验。面试要说明高负载下排队效应会放大尾延迟。","topic":"debugging-sre","difficulty":"medium","type":"theory"}
+{"question":"如何提升排障可观测性准备度？","answer":"统一request_id贯穿日志/链路/指标；支持动态日志级别；关键组件暴露健康与状态端点；演练时验证工具链可用。","topic":"debugging-sre","difficulty":"hard","type":"playbook"}
+{"question":"事故沟通为什么影响技术处置效率？","answer":"不透明沟通会制造重复问询与认知分裂。应建立单一事实源（war room日志），同步节奏与责任人，减少上下文切换。","topic":"debugging-sre","difficulty":"medium","type":"knowledge"}

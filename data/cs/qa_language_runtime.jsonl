@@ -1,0 +1,6 @@
+﻿{"question":"Python 中 CPU 密集任务为什么不建议多线程？","answer":"受 GIL 限制，同一进程内线程不能并行执行 Python 字节码。更优方案是多进程或下沉到 C 扩展。","topic":"language-runtime","difficulty":"easy","type":"theory"}
+{"question":"Java volatile 能解决线程安全的哪些问题？","answer":"解决可见性与有序性，不保证复合操作原子性。候选人应能解释 i++ 仍不安全。","topic":"language-runtime","difficulty":"medium","type":"theory"}
+{"question":"C++ move 语义真正优化了什么？","answer":"减少深拷贝带来的资源复制，转移所有权。必须说明 moved-from 对象的有效但未指定状态。","topic":"language-runtime","difficulty":"medium","type":"theory"}
+{"question":"Python 可变默认参数为什么是经典坑？","answer":"默认参数在函数定义时求值，跨调用共享状态。标准修复是使用 None 并在函数体初始化。","topic":"language-runtime","difficulty":"easy","type":"knowledge"}
+{"question":"Java GC 选择如何面向业务目标？","answer":"低延迟优先 ZGC/G1，吞吐优先 Parallel。面试中应要求候选人给指标-参数-验证闭环。","topic":"language-runtime","difficulty":"hard","type":"knowledge"}
+{"question":"语言运行时面试评分卡。","answer":"维度：语言机制理解35、性能意识25、并发与内存安全20、工程实践10、表达10。","topic":"language-runtime","difficulty":"medium","type":"rubric"}

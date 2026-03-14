@@ -1,0 +1,15 @@
+{"question":"单调栈题第一反应框架是什么？","answer":"先问是否在找“下一个更大/更小”或“左右最近边界”。若是，考虑单调栈并明确栈中元素含义（索引还是值）。检查重复值策略（严格/非严格）避免边界错。","topic":"algorithms","difficulty":"medium","type":"pattern"}
+{"question":"滑动窗口题如何防止写成 O(n^2)？","answer":"核心是不回退 left/right 指针；所有更新操作必须 O(1) 或均摊 O(1)。先定义窗口合法条件，再写“右扩-左缩”循环，最后验证每个元素最多进出窗口一次。","topic":"algorithms","difficulty":"medium","type":"pattern"}
+{"question":"二分查找模板在面试中如何稳定输出？","answer":"先确定是找精确值还是边界值（first/last true）。使用闭区间或半开区间其中一种并全程一致。循环不变量要能口头证明，否则极易死循环。","topic":"algorithms","difficulty":"medium","type":"pattern"}
+{"question":"图论题如何快速判定 BFS、Dijkstra、Bellman-Ford？","answer":"等权最短路用 BFS；非负权最短路用 Dijkstra；有负边或需判负环考虑 Bellman-Ford。若边数稀疏优先邻接表+堆，稠密图可考虑邻接矩阵。","topic":"algorithms","difficulty":"hard","type":"pattern"}
+{"question":"回溯题如何设计剪枝提高通过率？","answer":"先给状态定义，再给选择顺序与剪枝条件。常见剪枝：排序后去重、上下界估计、对称性剪枝、提前失败。面试要强调“剪枝不改变正确性，只减少搜索空间”。","topic":"algorithms","difficulty":"hard","type":"pattern"}
+{"question":"动态规划面试答题四步法。","answer":"1) 状态定义；2) 转移方程；3) 初始化；4) 遍历顺序。若说不清遍历顺序为何正确，通常说明状态依赖没想清。补充空间优化前先保证可读正确版本。","topic":"algorithms","difficulty":"medium","type":"playbook"}
+{"question":"贪心法什么时候可信？","answer":"必须给出交换论证或局部最优可扩展为全局最优的理由。若无法证明，优先考虑 DP 或反例验证。面试中“直觉上可行”不算通过。","topic":"algorithms","difficulty":"hard","type":"theory"}
+{"question":"并查集题常见失分点。","answer":"忘记路径压缩、重复 union 导致计数错、坐标映射越界。动态加点题需处理重复操作；若题目要求撤销操作，普通并查集不够需可回滚结构。","topic":"algorithms","difficulty":"medium","type":"mistake"}
+{"question":"TopK 题如何在堆与快选间做取舍？","answer":"在线流式或持续更新选堆；一次性离线查询可用 quickselect 平均 O(n)。若需稳定输出或多次查询，排序/索引结构可能更优。","topic":"algorithms","difficulty":"medium","type":"tradeoff"}
+{"question":"区间类题通用思路。","answer":"先排序定义主键（起点或终点），再决定扫描策略（合并、选择、覆盖）。强调边界：闭区间/开区间混用会直接导致错案。","topic":"algorithms","difficulty":"easy","type":"pattern"}
+{"question":"字符串匹配何时上 KMP？","answer":"当朴素匹配会重复回退主串且模式串较长时。面试重点是说明 lps 数组语义和失配转移，而不是死记模板。","topic":"algorithms","difficulty":"hard","type":"pattern"}
+{"question":"树题递归写法为什么容易错？","answer":"函数语义不清（返回值代表什么）是主因。先定义“该函数返回什么”，再写 base case。若有全局变量，需说明其与返回值是否重复表达同一信息。","topic":"algorithms","difficulty":"medium","type":"mistake"}
+{"question":"位运算题常见考察点有哪些？","answer":"低位提取、状态压缩、异或性质、位掩码枚举。答题需说明可读性与溢出风险，避免为了炫技牺牲可维护性。","topic":"algorithms","difficulty":"medium","type":"knowledge"}
+{"question":"面试编码中如何设计最小有效测试集？","answer":"至少包含：正常样例、边界样例、反例样例。边界要覆盖空输入、单元素、重复值、极值范围；反例用来击穿错误贪心或错误剪枝。","topic":"algorithms","difficulty":"medium","type":"testing"}
+{"question":"算法题口头表达的高分结构。","answer":"先给结论复杂度，再给思路分层（数据结构->流程->边界），最后给正确性理由。结构化表达比碎片化细节更能体现 senior 潜力。","topic":"algorithms","difficulty":"easy","type":"interview-skill"}

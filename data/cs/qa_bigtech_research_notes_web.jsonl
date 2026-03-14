@@ -1,0 +1,10 @@
+{"question":"SLO/SLI/SLA 三者如何在面试中准确区分？","answer":"调研要点（Google SRE）：SLI是可量化服务指标，SLO是指标目标区间，SLA是带后果的协议。高质量回答应补充“错误预算用于发布节奏决策”。","topic":"knowledge-guide","difficulty":"medium","type":"research-note"}
+{"question":"为什么故障处理强调“先止血后根因”？","answer":"调研要点（Google SRE Troubleshooting）：重大故障先恢复可用性、阻断级联，再做根因和复盘。这不是妥协，而是用户价值优先。","topic":"debugging-sre","difficulty":"medium","type":"research-note"}
+{"question":"排障中如何避免被伪相关误导？","answer":"调研要点：采用“假设-实验-证据”闭环，优先高概率解释；记录负结果。面试可强调‘correlation is not causation’并给反例。","topic":"debugging-sre","difficulty":"hard","type":"research-note"}
+{"question":"为什么复盘必须无责（blameless）？","answer":"调研要点（Google SRE Postmortem Culture）：归咎个人会压制上报和学习，系统性改进才是降低复发率的关键。复盘应聚焦促因与机制缺陷。","topic":"debugging-sre","difficulty":"medium","type":"research-note"}
+{"question":"高质量复盘行动项应具备什么属性？","answer":"调研要点：可执行（具体动作）、可追踪（owner+截止时间）、可验证（验收标准）。没有验证标准的行动项常沦为空话。","topic":"debugging-sre","difficulty":"medium","type":"research-note"}
+{"question":"系统设计面试的标准流程是什么？","answer":"调研要点（System Design Primer）：需求澄清与约束->高层架构->核心组件细化->瓶颈扩展与trade-off->容量估算。缺少容量估算通常直接降分。","topic":"system-design","difficulty":"medium","type":"research-note"}
+{"question":"为什么“所有设计都是 trade-off”是核心原则？","answer":"调研要点：性能与扩展性、延迟与吞吐、可用性与一致性无法同时最优。面试官看你是否能在约束下给可解释取舍。","topic":"system-design","difficulty":"medium","type":"research-note"}
+{"question":"为何系统设计里建议用分位数而非平均值？","answer":"调研要点（SRE SLO章节）：平均值掩盖长尾，P95/P99更贴近用户真实体验。面试回答应强调长尾对稳定性的破坏性。","topic":"system-design","difficulty":"hard","type":"research-note"}
+{"question":"大厂常见系统设计附加考察项有哪些？","answer":"调研要点：可观测性、发布策略、故障演练、容量冗余、安全基线。只给“功能设计”但无“运营设计”通常不够。","topic":"system-design","difficulty":"medium","type":"research-note"}
+{"question":"如何把公开资料转化为个人面试优势？","answer":"建议：把方法论做成模板并绑定案例（如SLO模板、排障模板、复盘模板），每次模拟面复用同一结构，提升稳定性和说服力。","topic":"interview-strategy","difficulty":"easy","type":"research-note"}

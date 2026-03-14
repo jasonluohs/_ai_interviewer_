@@ -1,0 +1,20 @@
+{"question":"二分查找写成 while(left < right) 时，mid 更新规则不严谨会导致什么问题？","answer":"典型错答是模板背诵但解释不出区间语义，导致死循环或漏解。高质量回答应先定义区间闭开关系，再给出 left/right 与 mid 的更新不变量。高压追问：请给一个会死循环的反例输入，并手推 3 轮指针变化。","topic":"algorithms","difficulty":"medium","type":"mistake"}
+{"question":"候选人说‘哈希一定比树快’，你如何追问击穿？","answer":"要求其比较时间复杂度平均/最坏、内存占用、顺序性需求、哈希冲突与退化场景。合格回答会指出在有序遍历、范围查询、内存受限或高冲突下平衡树可能更优。追问模板：请给业务场景并做 trade-off 结论。","topic":"algorithms","difficulty":"medium","type":"followup-template"}
+{"question":"系统设计中只画组件图、不提容量与SLO，属于什么层面的错误？","answer":"这是‘架构叙事型错答’，缺乏可运营性。高质量回答必须包含 QPS/峰值、延迟目标、错误预算、容量估算、故障域与降级策略。高压追问：按日活 1000 万重算核心存储与带宽。","topic":"system_design","difficulty":"hard","type":"mistake"}
+{"question":"当候选人说‘上缓存就快了’，面试官应如何追问？","answer":"连续追问四件事：命中率目标、失效策略、回源风暴、缓存一致性。优秀回答会补充热点 key、雪崩/击穿/穿透治理和多级缓存取舍。输出应有可验证指标而非口号。","topic":"system_design","difficulty":"hard","type":"followup-template"}
+{"question":"候选人把‘可用性’等同于‘不宕机’，为何不合格？","answer":"可用性必须量化为 SLI/SLO/SLA，并允许在错误预算内发生受控失败。高质量回答会给可用性计算口径、观测窗口和发布策略联动。追问：99.9% 对应月可容忍不可用时间是多少？","topic":"sre","difficulty":"medium","type":"mistake"}
+{"question":"数据库索引题里候选人只会说‘建联合索引’，你如何继续压问？","answer":"要求其说明最左前缀、选择性、回表成本、覆盖索引、写放大和统计信息失真影响。再给一条慢 SQL 要求其解释执行计划并提出可验证优化。","topic":"database","difficulty":"hard","type":"followup-template"}
+{"question":"并发题中候选人将‘线程安全’回答成‘加锁就行’，这是哪类风险？","answer":"属于‘策略单一化’风险，忽略锁粒度、死锁、饥饿、优先级反转和无锁替代。合格回答应比较互斥锁、读写锁、CAS、Actor/消息队列等方案。","topic":"os_concurrency","difficulty":"medium","type":"mistake"}
+{"question":"网络题只背 TCP 三次握手却不会定位超时重传问题，如何追问？","answer":"让其按链路分层定位：应用超时、连接建立、拥塞控制、丢包重传、队列积压。要求给抓包字段、核心指标和一次可复现实验。","topic":"network","difficulty":"hard","type":"followup-template"}
+{"question":"安全题里候选人把‘鉴权’和‘认证’混为一谈，面试官如何纠偏？","answer":"先让其定义身份认证（你是谁）与权限授权（你能做什么），再追问会话管理、token 失效、最小权限和审计。高质量回答需要威胁模型与滥用场景。","topic":"security_reliability","difficulty":"medium","type":"mistake"}
+{"question":"候选人回答‘分库分表后性能一定提升’，要如何高压追问？","answer":"追问路由键倾斜、跨分片事务、分页与排序、全局二级索引、扩容重平衡、运维复杂度。要求其给拆分前后瓶颈对比和回滚预案。","topic":"database","difficulty":"hard","type":"followup-template"}
+{"question":"项目复盘只讲结果不讲失败，为什么在大厂面试中会扣分？","answer":"因为无法判断真实 ownership 与学习闭环。优秀回答应包含事故背景、错误决策、检测延迟、修复动作、预防机制和量化收益。","topic":"behavior_project","difficulty":"medium","type":"mistake"}
+{"question":"当候选人遇到不会的问题开始泛泛而谈，面试官应该怎样控制节奏？","answer":"采用‘收敛式追问’：限定问题边界、限定时间、要求先给假设再给结论。若持续跑题，要求其重述题意并从最小可行解开始。","topic":"interview_strategy","difficulty":"medium","type":"playbook"}
+{"question":"编码题中候选人给出 AC 代码但解释不清复杂度，如何追问验证？","answer":"要求其给最坏输入并推导每步操作次数，说明瓶颈来自哪里。若复杂度不达标，继续追问可否用不同数据结构降阶。","topic":"algorithms","difficulty":"medium","type":"followup-template"}
+{"question":"系统设计中候选人忽略幂等性，会带来哪些线上风险？","answer":"在重试、超时、消息重复投递下会导致重复写入和状态错乱。合格回答应给幂等键设计、去重窗口、状态机约束与补偿策略。","topic":"backend_architecture","difficulty":"hard","type":"mistake"}
+{"question":"候选人说‘最终一致性就是延迟同步’，怎么追问到工程深水区？","answer":"追问一致性模型边界、冲突解决策略、读写路径可见性、补偿机制与用户体验兜底。要求其给一个跨地域下单库存场景并说明错误恢复。","topic":"backend_architecture","difficulty":"hard","type":"followup-template"}
+{"question":"面试官如何判断候选人的‘术语流利’是否掩盖了理解不足？","answer":"使用‘反例验证法’：要求候选人构造失败场景、比较两个近似概念、解释为何某方案在特定约束下失效。若无法给反例，通常是浅层记忆。","topic":"interview_strategy","difficulty":"medium","type":"playbook"}
+{"question":"排障题里候选人直接重启服务，为什么是危险信号？","answer":"这会掩盖根因并破坏证据链。高质量流程应先保全现场、缩小范围、构造时间线、验证假设，再执行有回滚的修复动作。","topic":"debugging_sre","difficulty":"hard","type":"mistake"}
+{"question":"当候选人只给‘我们做了优化’但没有量化收益，如何追问？","answer":"要求其给优化前后基线、指标口径、实验控制变量和显著性判断。没有量化就不能证明改进成立。","topic":"behavior_project","difficulty":"medium","type":"followup-template"}
+{"question":"候选人无法清楚表达时，压力型面试官如何继续而不失专业？","answer":"遵循三步：复述候选人观点、指出缺失信息、给 30 秒组织时间并要求结构化回答。目的不是羞辱，而是验证在压力下的清晰表达能力。","topic":"interview_strategy","difficulty":"medium","type":"playbook"}
+{"question":"代码评审时只看功能正确，不看边界与可维护性会有什么后果？","answer":"短期可能通过样例，长期会引入线上故障和演进成本。优秀回答应覆盖输入校验、异常处理、日志可观测性、可测试性与复杂度上限。","topic":"coding_patterns","difficulty":"medium","type":"mistake"}

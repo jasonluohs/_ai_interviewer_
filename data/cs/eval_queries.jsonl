@@ -1,0 +1,12 @@
+{"query":"讲一下前缀和统计和为K子数组的方法","expected_topic":"algorithms","expected_type":"coding"}
+{"query":"如何从SLO和错误预算角度评价服务可靠性","expected_topic":"sre","expected_type":"theory"}
+{"query":"缓存雪崩和击穿分别怎么治理","expected_topic":"system_design","expected_type":"playbook"}
+{"query":"MySQL联合索引最左前缀在什么情况下失效","expected_topic":"database","expected_type":"theory"}
+{"query":"解释一次线上故障复盘应包含哪些字段","expected_topic":"debugging_sre","expected_type":"playbook"}
+{"query":"如何在面试里回答项目难点并量化收益","expected_topic":"behavior_project","expected_type":"behavior"}
+{"query":"给我一个高压追问模板验证算法复杂度","expected_topic":"algorithms","expected_type":"followup-template"}
+{"query":"系统设计中如何做幂等避免重复提交","expected_topic":"backend_architecture","expected_type":"mistake"}
+{"query":"TCP重传和超时排障应该看哪些信号","expected_topic":"network","expected_type":"followup-template"}
+{"query":"最终一致性系统里冲突如何处理","expected_topic":"backend_architecture","expected_type":"followup-template"}
+{"query":"面试官如何判断候选人是否只会背术语","expected_topic":"interview_strategy","expected_type":"playbook"}
+{"query":"如何给出接雨水双指针正确性证明","expected_topic":"algorithms","expected_type":"coding"}

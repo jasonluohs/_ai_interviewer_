@@ -1,0 +1,15 @@
+{"question":"事务隔离级别如何按场景选择？","answer":"读多写少且可容忍轻微不一致可用 RC；强一致与复杂并发写考虑 RR/Serializable。面试应结合业务风险而非背定义。","topic":"database","difficulty":"medium","type":"theory"}
+{"question":"索引优化时为什么要先看执行计划再改SQL？","answer":"执行计划揭示扫描行数、索引使用、回表与排序代价。盲目改 SQL 常把局部优化变成全局退化。","topic":"database","difficulty":"medium","type":"playbook"}
+{"question":"联合索引最左前缀原则的工程含义。","answer":"where/order/group 条件应尽量命中左前列，否则索引利用率下降。要考虑过滤、排序、回表一起优化。","topic":"database","difficulty":"medium","type":"theory"}
+{"question":"什么情况下会发生锁等待雪崩？","answer":"长事务+热点行+高并发重试。后果是连接池耗尽和级联超时。处理顺序：止血限流->定位长事务->拆分热点。","topic":"database","difficulty":"hard","type":"troubleshooting"}
+{"question":"为什么‘加索引’不总是更快？","answer":"写放大、维护成本、内存占用、选择性差导致收益低。索引是读写权衡，不是免费午餐。","topic":"database","difficulty":"medium","type":"tradeoff"}
+{"question":"分库分表后如何做分页查询？","answer":"避免深翻页 offset；采用游标分页+分片并行+聚合排序。必要时引入预计算索引表。","topic":"database","difficulty":"hard","type":"architecture"}
+{"question":"如何设计数据库扩容不下线方案？","answer":"双写迁移、增量回放、校验对账、灰度切流、可逆回滚。每步需有一致性检查点。","topic":"database","difficulty":"hard","type":"playbook"}
+{"question":"主从延迟监控应关注哪些指标？","answer":"复制位点差、apply延迟、回放吞吐、慢SQL积压。仅看seconds_behind_master不够。","topic":"database","difficulty":"medium","type":"knowledge"}
+{"question":"缓存与数据库一致性如何面试高分回答？","answer":"先定义一致性级别，再选策略（删缓存、延迟双删、订阅变更修复），最后给异常流程和补偿机制。","topic":"database","difficulty":"hard","type":"playbook"}
+{"question":"OLTP 与 OLAP 混部为何危险？","answer":"分析查询挤占在线事务资源，引发尾延迟和锁冲突。需资源隔离、读写分离、物化视图/预计算。","topic":"database","difficulty":"hard","type":"knowledge"}
+{"question":"如何解释 MVCC 的价值？","answer":"读写并发下减少锁冲突，提升吞吐；代价是版本维护和可见性判断开销。要讲 undo/版本链概念。","topic":"database","difficulty":"medium","type":"theory"}
+{"question":"数据库故障演练最小集合。","answer":"主库故障切换、网络分区、慢查询风暴、磁盘满、误删恢复。演练必须包含回切与数据一致性校验。","topic":"database","difficulty":"hard","type":"playbook"}
+{"question":"SQL 面试常见低分点。","answer":"不会看 explain、忽略数据分布、只讲语法不讲代价模型、边界条件（null/重复）处理含糊。","topic":"database","difficulty":"easy","type":"rubric"}
+{"question":"如何在面试中比较 SQL 与 NoSQL 选型？","answer":"按事务一致性、查询模式、扩展方式、数据模型演进、运维复杂度比较，最后落到业务约束。","topic":"database","difficulty":"medium","type":"tradeoff"}
+{"question":"数据库面试评分卡（进阶）。","answer":"原理25、实战排障25、架构设计25、一致性与恢复15、表达10。用于面试报告结构化输出。","topic":"database","difficulty":"medium","type":"rubric"}

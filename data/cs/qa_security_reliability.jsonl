@@ -1,0 +1,6 @@
+﻿{"question":"接口安全的最小闭环是什么？","answer":"认证、授权、审计、限流四件套缺一不可。要求候选人说明如何落到网关和业务双层。","topic":"security-reliability","difficulty":"medium","type":"theory"}
+{"question":"支付回调场景为什么必须状态机驱动？","answer":"防止乱序回调与重复通知破坏业务一致性。状态迁移必须单向合法并可重入。","topic":"security-reliability","difficulty":"hard","type":"knowledge"}
+{"question":"如何设计故障演练而不把生产打挂？","answer":"小流量、可回滚、白名单、演练停止条件、跨团队值守。没有护栏的混沌工程等于事故制造。","topic":"security-reliability","difficulty":"hard","type":"playbook"}
+{"question":"SLO/错误预算为什么能约束发布节奏？","answer":"因为它把稳定性目标量化为可消耗预算，预算耗尽时必须减速发布并优先还债。","topic":"security-reliability","difficulty":"medium","type":"knowledge"}
+{"question":"安全与稳定性评分卡。","answer":"维度：风险识别30、防护设计25、故障应对25、合规意识10、可观测性10。","topic":"security-reliability","difficulty":"medium","type":"rubric"}
+{"question":"如何从 SLO 与错误预算角度评价服务可靠性？","answer":"先定义用户可感知的 SLI（成功率、延迟、可用性），再设定 SLO 目标与观测窗口，计算当前预算消耗速度。若预算接近耗尽，应暂停高风险发布并优先做稳定性还债（降级、容量扩展、缺陷修复）。面试回答应给出至少一个真实阈值示例，例如 99.9% 月可用性。","topic":"security-reliability","difficulty":"medium","type":"theory"}
