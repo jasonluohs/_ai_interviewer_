@@ -19,6 +19,7 @@ class App {
         this.reportContent = '';
         this.resumeUploaded = false;
         this.resumeFileName = '';
+        this.radarChart = null;  // 雷达图实例
 
         this.loadingOverlay = document.getElementById('loading-overlay');
         this.loadingText = document.getElementById('loading-text');
@@ -82,6 +83,13 @@ class App {
                     if (rc) rc.textContent = '';
                     const rd = document.getElementById('report-download');
                     if (rd) rd.style.display = 'none';
+                    // 重置雷达图
+                    const radarContainer = document.getElementById('radar-chart-container');
+                    if (radarContainer) radarContainer.style.display = 'none';
+                    if (this.radarChart) {
+                        this.radarChart.destroy();
+                        this.radarChart = null;
+                    }
                     // Reset phase timeline
                     this.resetPhaseTimeline();
                 }
@@ -445,8 +453,18 @@ class App {
                                 } else {
                                     reportContent.textContent = this.reportContent;
                                 }
+                                // 实时尝试提取并更新雷达图
+                                const scoreData = this.extractScoreData(this.reportContent);
+                                if (scoreData) {
+                                    this.createRadarChart(scoreData);
+                                }
                             } else if (data.type === 'done') {
                                 if (reportDownload) reportDownload.style.display = 'block';
+                                // 最终确保雷达图已生成
+                                const scoreData = this.extractScoreData(this.reportContent);
+                                if (scoreData) {
+                                    this.createRadarChart(scoreData);
+                                }
                             } else if (data.type === 'error') {
                                 reportContent.textContent = `生成失败: ${data.message}`;
                             }
@@ -476,6 +494,205 @@ class App {
         a.download = `interview_report_${new Date().toISOString().slice(0, 10)}.md`;
         a.click();
         URL.revokeObjectURL(url);
+    }
+
+    /* ==================== Radar Chart ==================== */
+    /**
+     * 从报告内容中提取 JSON 评分数据
+     */
+    extractScoreData(reportText) {
+        try {
+            // 匹配 ```json ... ``` 代码块
+            const jsonMatch = reportText.match(/```json\s*([\s\S]*?)```/);
+            if (jsonMatch && jsonMatch[1]) {
+                const jsonData = JSON.parse(jsonMatch[1].trim());
+                return jsonData;
+            }
+            return null;
+        } catch (e) {
+            console.error('解析评分 JSON 失败:', e);
+            return null;
+        }
+    }
+
+    /**
+     * 创建或更新雷达图
+     */
+    createRadarChart(scoreData) {
+        const container = document.getElementById('radar-chart-container');
+        const canvas = document.getElementById('score-radar-chart');
+        const summaryEl = document.getElementById('radar-score-summary');
+        
+        if (!scoreData || !scoreData.dimensions || !container || !canvas) {
+            if (container) container.style.display = 'none';
+            return;
+        }
+
+        const dims = scoreData.dimensions;
+        
+        // 评分维度配置（根据 ai_report.py 中的定义）
+        const dimensionConfig = [
+            { key: 'technical', label: '技术能力', maxScore: 30, color: '#00d4ff' },
+            { key: 'problem_solving', label: '问题解决', maxScore: 25, color: '#a855f7' },
+            { key: 'communication', label: '沟通表达', maxScore: 20, color: '#06b6d4' },
+            { key: 'learning_depth', label: '学习潜力', maxScore: 15, color: '#10b981' },
+            { key: 'professionalism', label: '综合素养', maxScore: 10, color: '#f59e0b' }
+        ];
+
+        // 计算百分比分数（归一化到0-100）
+        const normalizedScores = dimensionConfig.map(d => {
+            const score = dims[d.key] || 0;
+            return Math.round((score / d.maxScore) * 100);
+        });
+
+        const labels = dimensionConfig.map(d => d.label);
+
+        // 销毁旧图表
+        if (this.radarChart) {
+            this.radarChart.destroy();
+        }
+
+        // 显示容器
+        container.style.display = 'block';
+
+        // 创建新图表
+        const ctx = canvas.getContext('2d');
+        this.radarChart = new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: '能力评分',
+                    data: normalizedScores,
+                    backgroundColor: 'rgba(0, 212, 255, 0.15)',
+                    borderColor: '#00d4ff',
+                    borderWidth: 2,
+                    pointBackgroundColor: dimensionConfig.map(d => d.color),
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                    pointRadius: 6,
+                    pointHoverRadius: 8,
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: dimensionConfig.map(d => d.color),
+                    pointHoverBorderWidth: 3,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        enabled: true,
+                        backgroundColor: 'rgba(14, 18, 32, 0.95)',
+                        titleColor: '#f1f5f9',
+                        bodyColor: '#cbd5e1',
+                        borderColor: 'rgba(0, 212, 255, 0.3)',
+                        borderWidth: 1,
+                        cornerRadius: 8,
+                        padding: 12,
+                        displayColors: false,
+                        titleFont: { size: 14, weight: '600' },
+                        bodyFont: { size: 13 },
+                        callbacks: {
+                            title: (items) => items[0].label,
+                            label: (context) => {
+                                const idx = context.dataIndex;
+                                const config = dimensionConfig[idx];
+                                const actualScore = dims[config.key] || 0;
+                                return [
+                                    `得分: ${actualScore} / ${config.maxScore}`,
+                                    `占比: ${normalizedScores[idx]}%`
+                                ];
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    r: {
+                        beginAtZero: true,
+                        max: 100,
+                        min: 0,
+                        ticks: {
+                            stepSize: 20,
+                            color: '#64748b',
+                            backdropColor: 'transparent',
+                            font: { size: 10 }
+                        },
+                        grid: {
+                            color: 'rgba(100, 116, 139, 0.2)',
+                            circular: true
+                        },
+                        angleLines: {
+                            color: 'rgba(100, 116, 139, 0.2)'
+                        },
+                        pointLabels: {
+                            color: '#cbd5e1',
+                            font: { size: 12, weight: '500' },
+                            padding: 8
+                        }
+                    }
+                },
+                animation: {
+                    duration: 1000,
+                    easing: 'easeOutQuart'
+                }
+            }
+        });
+
+        // 更新评分摘要
+        this.updateScoreSummary(scoreData, dimensionConfig, dims, summaryEl);
+    }
+
+    /**
+     * 更新评分摘要区域
+     */
+    updateScoreSummary(scoreData, dimensionConfig, dims, summaryEl) {
+        if (!summaryEl) return;
+
+        const overall = scoreData.overall || 0;
+        const grade = scoreData.grade || '-';
+
+        // 计算评级颜色
+        let gradeColor = '#64748b';
+        if (grade === 'A') gradeColor = '#10b981';
+        else if (grade === 'B') gradeColor = '#06b6d4';
+        else if (grade === 'C') gradeColor = '#f59e0b';
+        else if (grade === 'D') gradeColor = '#f97316';
+        else if (grade === 'E') gradeColor = '#ef4444';
+
+        // 生成分数条形图
+        const barsHtml = dimensionConfig.map(d => {
+            const score = dims[d.key] || 0;
+            const percent = Math.round((score / d.maxScore) * 100);
+            return `
+                <div class="radar-score-bar">
+                    <div class="radar-score-bar-label">
+                        <span class="radar-score-bar-name">${d.label}</span>
+                        <span class="radar-score-bar-value">${score}/${d.maxScore}</span>
+                    </div>
+                    <div class="radar-score-bar-track">
+                        <div class="radar-score-bar-fill" style="width: ${percent}%; background: ${d.color};"></div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        summaryEl.innerHTML = `
+            <div class="radar-overall-score">
+                <div class="radar-overall-number">${overall}</div>
+                <div class="radar-overall-label">总分</div>
+            </div>
+            <div class="radar-grade-badge" style="background: ${gradeColor};">
+                ${grade}
+            </div>
+            <div class="radar-score-bars">
+                ${barsHtml}
+            </div>
+        `;
     }
 
     /* ==================== Resume ==================== */

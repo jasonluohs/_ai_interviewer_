@@ -374,6 +374,17 @@
                     <button class="cyber-btn cyber-btn-accent full-width" id="generate-report-btn" style="margin-top:16px;">
                         <i class="fas fa-robot"></i> 生成 AI 评价报告
                     </button>
+                    <!-- 雷达图区域 -->
+                    <div class="radar-chart-container" id="radar-chart-container" style="display:none;">
+                        <div class="radar-chart-header">
+                            <i class="fas fa-chart-pie"></i>
+                            <span>能力雷达图</span>
+                        </div>
+                        <div class="radar-chart-wrapper">
+                            <canvas id="score-radar-chart"></canvas>
+                        </div>
+                        <div class="radar-score-summary" id="radar-score-summary"></div>
+                    </div>
                     <div class="report-content" id="report-content"></div>
                     <div class="report-download" id="report-download" style="display:none; margin-top:12px;">
                         <button class="cyber-btn cyber-btn-ghost full-width" id="download-report-md">
@@ -396,6 +407,8 @@
     </div>
 
     <!-- JavaScript -->
+    <!-- Chart.js 雷达图 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
     <!-- Markdown 渲染依赖 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
