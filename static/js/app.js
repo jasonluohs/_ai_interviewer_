@@ -21,6 +21,12 @@ class App {
         this.resumeFileName = '';
         this.radarChart = null;  // 雷达图实例
 
+        // 导师信息
+        this.advisorSearched = false;
+        this.advisorSchool = '';
+        this.advisorName = '';
+        this.advisorInfo = null;
+
         // 模式管理
         this.interviewMode = null;  // 'standard' | 'immersive'
 
@@ -52,6 +58,7 @@ class App {
         this.bindDrawerEvents();
         this.bindReportEvents();
         this.bindResumeEvents();
+        this.bindAdvisorEvents();
         this.bindImmersiveEvents();
 
         await this.loadPresets();
@@ -59,6 +66,7 @@ class App {
         await this.loadRagDomains();
         await this.loadRagHistory();
         await this.loadResumeStatus();
+        await this.loadAdvisorStatus();
 
         console.log('✅ 初始化完成');
     }
@@ -1113,6 +1121,286 @@ class App {
     
         // 同步更新沉浸式模式的简历按钮
         this.updateImmersiveResumeBtn();
+    }
+
+    /* ==================== Advisor Search ==================== */
+    bindAdvisorEvents() {
+        const advisorSchoolInput = document.getElementById('advisor-school-input');
+        const advisorNameInput = document.getElementById('advisor-name-input');
+        const advisorSearchBtn = document.getElementById('advisor-search-btn');
+        const advisorDeleteBtn = document.getElementById('advisor-delete-btn');
+
+        if (advisorSearchBtn) {
+            advisorSearchBtn.addEventListener('click', () => this.searchAdvisor());
+        }
+
+        if (advisorDeleteBtn) {
+            advisorDeleteBtn.addEventListener('click', () => this.deleteAdvisor());
+        }
+
+        // 支持回车键搜索
+        if (advisorNameInput) {
+            advisorNameInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    this.searchAdvisor();
+                }
+            });
+        }
+
+        // 沉浸模式导师搜索按钮
+        const immersiveAdvisorBtn = document.getElementById('immersive-advisor-btn');
+        if (immersiveAdvisorBtn) {
+            immersiveAdvisorBtn.addEventListener('click', () => this.showAdvisorModal());
+        }
+
+        // 模态框关闭按钮
+        const modalCloseBtn = document.getElementById('advisor-modal-close');
+        if (modalCloseBtn) {
+            modalCloseBtn.addEventListener('click', () => this.hideAdvisorModal());
+        }
+
+        // 模态框搜索按钮
+        const modalSearchBtn = document.getElementById('modal-advisor-search-btn');
+        if (modalSearchBtn) {
+            modalSearchBtn.addEventListener('click', () => this.searchAdvisorFromModal());
+        }
+
+        // 点击模态框背景关闭
+        const advisorModal = document.getElementById('advisor-modal');
+        if (advisorModal) {
+            advisorModal.addEventListener('click', (e) => {
+                if (e.target.id === 'advisor-modal') {
+                    this.hideAdvisorModal();
+                }
+            });
+        }
+    }
+
+    showAdvisorModal() {
+        const modal = document.getElementById('advisor-modal');
+        if (modal) {
+            modal.style.display = 'flex';
+            // 预填充已保存的学校和导师
+            const schoolInput = document.getElementById('modal-advisor-school');
+            const nameInput = document.getElementById('modal-advisor-name');
+            if (schoolInput && this.advisorSchool) schoolInput.value = this.advisorSchool;
+            if (nameInput && this.advisorName) nameInput.value = this.advisorName;
+        }
+    }
+
+    hideAdvisorModal() {
+        const modal = document.getElementById('advisor-modal');
+        if (modal) modal.style.display = 'none';
+    }
+
+    async searchAdvisorFromModal() {
+        const schoolInput = document.getElementById('modal-advisor-school');
+        const nameInput = document.getElementById('modal-advisor-name');
+        const progressArea = document.getElementById('modal-advisor-progress');
+        const progressFill = document.getElementById('modal-advisor-progress-fill');
+        const progressText = document.getElementById('modal-advisor-progress-text');
+        const resultArea = document.getElementById('modal-advisor-result');
+        const resultText = document.getElementById('modal-advisor-info-text');
+
+        const school = schoolInput?.value.trim() || '';
+        const name = nameInput?.value.trim() || '';
+
+        if (!school || !name) {
+            alert('请填写学校名称和导师姓名');
+            return;
+        }
+
+        // 显示进度
+        if (progressArea) progressArea.style.display = 'block';
+        if (resultArea) resultArea.style.display = 'none';
+        if (progressFill) progressFill.style.width = '20%';
+        if (progressText) progressText.textContent = '正在搜索...';
+
+        try {
+            const formData = new FormData();
+            formData.append('school', school);
+            formData.append('name', name);
+
+            if (progressFill) progressFill.width = '50%';
+            if (progressText) progressText.textContent = 'AI 正在联网搜索...';
+
+            const response = await fetch('/api/advisor/search', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if (response.ok && data.status === 'ok') {
+                if (progressFill) progressFill.style.width = '100%';
+                if (progressText) progressText.textContent = '✅ 搜索成功！';
+                
+                this.advisorSearched = true;
+                this.advisorSchool = school;
+                this.advisorName = name;
+                this.advisorInfo = typeof data.info === 'string' ? data.info : JSON.stringify(data.info);
+                
+                // 显示结果
+                if (resultArea) resultArea.style.display = 'block';
+                if (resultText) resultText.textContent = this.advisorInfo;
+                
+                // 更新主界面
+                this.updateAdvisorUI();
+                
+                // 2秒后关闭模态框
+                setTimeout(() => this.hideAdvisorModal(), 2000);
+            } else {
+                throw new Error(data.message || '搜索失败');
+            }
+        } catch (error) {
+            console.error('导师搜索失败:', error);
+            if (progressText) progressText.textContent = `❌ 搜索失败：${error.message}`;
+        }
+    }
+
+    async loadAdvisorStatus() {
+        try {
+            const response = await fetch('/api/advisor/status');
+            const data = await response.json();
+            this.advisorSearched = data.searched;
+            this.advisorSchool = data.school || '';
+            this.advisorName = data.name || '';
+            this.advisorInfo = data.info;
+            this.updateAdvisorUI();
+        } catch (error) {
+            console.error('加载导师状态失败:', error);
+        }
+    }
+
+    async searchAdvisor() {
+        const schoolInput = document.getElementById('advisor-school-input');
+        const nameInput = document.getElementById('advisor-name-input');
+        const inputArea = document.getElementById('advisor-input-area');
+        const progressArea = document.getElementById('advisor-progress');
+        const progressFill = document.getElementById('advisor-progress-fill');
+        const progressText = document.getElementById('advisor-progress-text');
+        const errorArea = document.getElementById('advisor-error');
+        const errorText = document.getElementById('advisor-error-text');
+
+        const school = schoolInput?.value.trim() || '';
+        const name = nameInput?.value.trim() || '';
+
+        if (!school || !name) {
+            if (errorArea) errorArea.style.display = 'block';
+            if (errorText) errorText.textContent = '请填写学校名称和导师姓名';
+            return;
+        }
+
+        // 隐藏错误
+        if (errorArea) errorArea.style.display = 'none';
+
+        // 显示进度
+        if (inputArea) inputArea.style.display = 'none';
+        if (progressArea) progressArea.style.display = 'block';
+        if (progressFill) progressFill.style.width = '20%';
+        if (progressText) progressText.textContent = '正在搜索导师信息...';
+
+        try {
+            const formData = new FormData();
+            formData.append('school', school);
+            formData.append('name', name);
+
+            if (progressFill) progressFill.style.width = '40%';
+            if (progressText) progressText.textContent = 'AI 正在联网搜索（约 5-10 秒）...';
+
+            const response = await fetch('/api/advisor/search', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if (response.ok && data.status === 'ok') {
+                if (progressFill) progressFill.style.width = '100%';
+                if (progressText) progressText.textContent = data.from_cache ? '✅ 从缓存加载导师信息' : '✅ 导师信息搜索成功！';
+                
+                this.advisorSearched = true;
+                this.advisorSchool = school;
+                this.advisorName = name;
+                // 确保是字符串类型
+                this.advisorInfo = typeof data.info === 'string' ? data.info : JSON.stringify(data.info);
+                
+                setTimeout(() => this.updateAdvisorUI(), data.from_cache ? 500 : 1500);
+            } else {
+                // 搜索失败，降级到通用模式
+                throw new Error(data.message || '未找到导师信息');
+            }
+        } catch (error) {
+            console.error('导师搜索失败:', error);
+            if (progressText) progressText.textContent = `❌ 搜索失败：${error.message}`;
+            
+            // 显示错误信息
+            if (errorArea) errorArea.style.display = 'block';
+            if (errorText) errorText.textContent = `搜索失败：${error.message}，将使用通用面试流程`;
+            
+            // 3 秒后恢复输入框
+            setTimeout(() => {
+                if (inputArea) inputArea.style.display = 'block';
+                if (progressArea) progressArea.style.display = 'none';
+            }, 3000);
+        }
+    }
+
+    async deleteAdvisor() {
+        if (!confirm('确定要清除已搜索的导师信息吗？')) return;
+        try {
+            const response = await fetch('/api/advisor', { method: 'DELETE' });
+            const data = await response.json();
+            if (data.status === 'ok') {
+                this.advisorSearched = false;
+                this.advisorSchool = '';
+                this.advisorName = '';
+                this.advisorInfo = null;
+                this.updateAdvisorUI();
+            }
+        } catch (error) {
+            console.error('清除导师信息失败:', error);
+        }
+    }
+
+    updateAdvisorUI() {
+        const statusEl = document.getElementById('advisor-status');
+        const inputArea = document.getElementById('advisor-input-area');
+        const searchedArea = document.getElementById('advisor-searched');
+        const progressArea = document.getElementById('advisor-progress');
+        const errorArea = document.getElementById('advisor-error');
+
+        // 隐藏所有状态
+        if (progressArea) progressArea.style.display = 'none';
+        if (errorArea) errorArea.style.display = 'none';
+
+        if (this.advisorSearched && this.advisorInfo) {
+            // 显示搜索到的导师信息
+            if (statusEl) statusEl.innerHTML = '<p class="hint-text" style="color: var(--success);">\u2705 导师信息已加载，面试将针对性提问</p>';
+            if (inputArea) inputArea.style.display = 'none';
+            if (searchedArea) searchedArea.style.display = 'block';
+
+            // 显示学校名称
+            const displaySchool = document.getElementById('advisor-display-school');
+            if (displaySchool) displaySchool.textContent = this.advisorSchool;
+
+            // 显示导师信息文本
+            const displayResearch = document.getElementById('advisor-display-research');
+            if (displayResearch) {
+                displayResearch.textContent = this.advisorInfo;
+            }
+        } else {
+            // 未搜索状态
+            if (statusEl) statusEl.innerHTML = '<p class="hint-text">输入学校和导师姓名，AI 将针对性提问</p>';
+            if (inputArea) inputArea.style.display = 'block';
+            if (searchedArea) searchedArea.style.display = 'none';
+
+            // 清空输入框
+            const schoolInput = document.getElementById('advisor-school-input');
+            const nameInput = document.getElementById('advisor-name-input');
+            if (schoolInput) schoolInput.value = '';
+            if (nameInput) nameInput.value = '';
+        }
     }
 
     /* ==================== Utilities ==================== */
