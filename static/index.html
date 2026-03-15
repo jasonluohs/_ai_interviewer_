@@ -243,6 +243,52 @@
 
                 <div class="panel-section">
                     <div class="panel-section-title">
+                        <i class="fas fa-user-graduate"></i> 导师信息
+                    </div>
+                    <div id="advisor-status">
+                        <p class="hint-text">输入学校和导师姓名，AI 将针对性提问</p>
+                    </div>
+                    <div id="advisor-input-area">
+                        <input type="text" id="advisor-school-input" placeholder="学校名称（如：中国科学技术大学）" class="cyber-input" style="margin-bottom: 8px;">
+                        <input type="text" id="advisor-name-input" placeholder="导师姓名（如：陈恩红）" class="cyber-input" style="margin-bottom: 8px;">
+                        <button class="cyber-btn cyber-btn-accent full-width" id="advisor-search-btn">
+                            <i class="fas fa-search"></i> 搜索导师信息
+                        </button>
+                    </div>
+                    <div id="advisor-searched" style="display: none;">
+                        <div class="advisor-info-card">
+                            <div class="advisor-header" style="margin-bottom: 12px;">
+                                <i class="fas fa-user-tie advisor-icon"></i>
+                                <div class="advisor-basic" style="flex: 1;">
+                                    <div style="font-size: 15px; font-weight: 600; color: var(--text-bright); margin-bottom: 4px;">
+                                        导师信息已加载
+                                    </div>
+                                    <div style="font-size: 13px; color: var(--text-secondary);">
+                                        <span id="advisor-display-school"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="advisor-research" id="advisor-display-research" style="font-size: 13px; line-height: 1.6; color: var(--text-secondary); padding: 12px; background: rgba(0, 0, 0, 0.2); border-radius: 6px; white-space: pre-wrap; word-wrap: break-word;"></div>
+                        </div>
+                        <button class="cyber-btn cyber-btn-danger cyber-btn-sm full-width" id="advisor-delete-btn" style="margin-top: 10px;">
+                            <i class="fas fa-trash-alt"></i> 清除导师信息
+                        </button>
+                    </div>
+                    <div id="advisor-progress" style="display: none;">
+                        <div class="progress-track">
+                            <div class="progress-glow" id="advisor-progress-fill"></div>
+                        </div>
+                        <p class="hint-text" id="advisor-progress-text">正在搜索导师信息...</p>
+                    </div>
+                    <div id="advisor-error" style="display: none;">
+                        <p class="hint-text" style="color: #fc8181;" id="advisor-error-text"></p>
+                    </div>
+                </div>
+
+                <div class="panel-divider"></div>
+
+                <div class="panel-section">
+                    <div class="panel-section-title">
                         <i class="fas fa-code"></i> 代码编辑器
                     </div>
                     <label class="cyber-toggle">
@@ -547,6 +593,16 @@
                     </button>
                 </div>
 
+                <!-- 导师搜索 -->
+                <div class="immersive-setting-item">
+                    <div class="immersive-setting-label">
+                        <i class="fas fa-user-graduate"></i> 导师信息
+                    </div>
+                    <button class="cyber-btn cyber-btn-sm" id="immersive-advisor-btn">
+                        <i class="fas fa-search"></i> 搜索
+                    </button>
+                </div>
+
                 <!-- 代码编辑器 -->
                 <div class="immersive-setting-item">
                     <div class="immersive-setting-label">
@@ -595,6 +651,45 @@
             <div class="spinner-ring spinner-ring-2"></div>
         </div>
         <p id="loading-text">正在处理...</p>
+    </div>
+
+    <!-- 导师搜索模态框 -->
+    <div class="advisor-modal" id="advisor-modal" style="display: none;">
+        <div class="advisor-modal-content">
+            <div class="advisor-modal-header">
+                <h3><i class="fas fa-user-graduate"></i> 搜索导师信息</h3>
+                <button class="icon-btn icon-btn-ghost" id="advisor-modal-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="advisor-modal-body">
+                <div class="advisor-input-group">
+                    <label>学校名称</label>
+                    <input type="text" id="modal-advisor-school" placeholder="例如：中国科学技术大学" class="cyber-input">
+                </div>
+                <div class="advisor-input-group">
+                    <label>导师姓名</label>
+                    <input type="text" id="modal-advisor-name" placeholder="例如：陈恩红" class="cyber-input">
+                </div>
+                <button class="cyber-btn cyber-btn-accent full-width" id="modal-advisor-search-btn">
+                    <i class="fas fa-search"></i> 开始搜索
+                </button>
+                <div id="modal-advisor-progress" style="display: none; margin-top: 16px;">
+                    <div class="progress-track">
+                        <div class="progress-glow" id="modal-advisor-progress-fill"></div>
+                    </div>
+                    <p class="hint-text" id="modal-advisor-progress-text">正在搜索...</p>
+                </div>
+                <div id="modal-advisor-result" style="display: none; margin-top: 16px;">
+                    <div class="advisor-info-card">
+                        <div style="font-size: 14px; font-weight: 600; color: var(--text-bright); margin-bottom: 8px;">
+                            ✅ 搜索成功
+                        </div>
+                        <div id="modal-advisor-info-text" style="font-size: 13px; line-height: 1.6; color: var(--text-secondary); white-space: pre-wrap;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- JavaScript -->
